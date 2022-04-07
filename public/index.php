@@ -40,6 +40,11 @@ try {
         'is_production' =>  (bool)getenv('IS.PRODUCTION')
     ];
 
+    $CONFIG['domain'] = [
+        'site'          =>  getenv('DOMAIN'),
+        'fqdn'          =>  getenv('DOMAIN.FQDN')
+    ];
+
     $CONFIG['db'] = [
         'hostname'      =>  getenv('DB.HOST'),
         'database'      =>  getenv('DB.NAME'),
