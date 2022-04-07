@@ -82,6 +82,7 @@ class Search
                 "highlight({before_match='<em>', after_match='</em>', around=1}, 'district') AS district",
                 "highlight({before_match='<em>', after_match='</em>', around=1}, 'street') AS street",
                 "highlight({before_match='<em>', after_match='</em>', around=1}, 'fio') AS fio",
+                "address",
                 "ticket",
                 "meta"
             ]));

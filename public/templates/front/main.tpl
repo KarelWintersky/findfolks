@@ -1,7 +1,11 @@
 {if $callback_message}
     <div class="nb">{$callback_message}</div>
 {/if}
+{if $dataset_count > 0}
 Последние {$dataset_count} {$dataset_count|pluralForm:['объявление', 'объявления', 'объявлений']}: <br /><br />
+{else}
+    Объявлений пока нет
+{/if}
 {foreach $dataset as $row}
     <fieldset>
         <legend>{$row.cdate}</legend>

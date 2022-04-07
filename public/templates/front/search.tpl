@@ -31,7 +31,7 @@
     <tr>
         <td colspan="2" class="center">
             <br/>
-            <button type="button" class="search-button" id="actor-search" tabindex="6">Искать</button>
+            <button type="button" class="search-button" id="actor-search" tabindex="6">Найти</button>
         </td>
     </tr>
 </table>

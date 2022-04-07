@@ -49,6 +49,7 @@ input {
 .copy {
     color: gainsboro;
     font-size: small;
+    text-align: right;
 }
 
 .center {
@@ -56,6 +57,6 @@ input {
 }
 .search-button {
     font-size: large;
-    height: 70px;
+    height: 30px;
     min-width: 50%;
 }
