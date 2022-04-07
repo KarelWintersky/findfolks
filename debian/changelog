@@ -1,3 +1,18 @@
+findfolks (0.1.16) stable; urgency=medium
+
+  * [R] 0.1.16 Release
+  * [+] add postinst script
+  * [*] fix postinst: make symlinks
+  * [+] добавлены OpenGraph-теги
+  * [+] добавлена базовая страница админки
+  * [+] добавлены роуты аутентификации и шаблоны
+  * [+] добавлено поле GUID в БД и поисковый индекс
+  * [+] добавлено сохранение поля GUID в БД
+  * [+] добавлено сохранения поля GUID в поисковый индекс
+  * [*] исправлено логгирование при поиске
+
+ -- Karel Wintersky <karel.wintersky@yandex.ru>  Fri, 08 Apr 2022 02:29:29 +0300
+
 findfolks (0.1.6) stable; urgency=medium
 
   * [*] всякие мелкие фиксы
