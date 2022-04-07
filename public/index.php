@@ -14,6 +14,7 @@ use Arris\Path;
 use Arris\Toolkit\SphinxToolkit;
 use Dotenv\Dotenv;
 use FindFolks\TemplateSmarty as Template;
+use Monolog\Logger;
 
 require_once dirname(__DIR__, 1) . '/vendor/autoload.php';
 
@@ -69,11 +70,25 @@ try {
         ]
     ];
 
+    /* === AppLogger === */
     AppLogger::init('FindFolks', bin2hex(random_bytes(8)), [
         'default_logfile_path'      => dirname(__DIR__, 1) . '/logs/',
         'default_logfile_prefix'    => '/' . date_format(date_create(), 'Y-m-d') . '__'
     ] );
-    AppLogger::addScope('main', []);
+    AppLogger::addScope('main', [
+        [ 'notices.log', Logger::NOTICE ],
+        [ 'not_found.log', Logger::WARNING ],
+        [ 'error.log', Logger::ERROR ]
+    ]);
+    AppLogger::addScope('search', [
+        [ 'search.log', Logger::NOTICE ],
+    ]);
+    AppLogger::addScope('search.requests', [
+        [ 'search_requests.log', Logger::NOTICE ],
+    ]);
+    AppLogger::addScope('site_usage', [
+        [ 'visits.log', Logger::INFO ]
+    ]);
     AppLogger::addScope('router', []);
 
     DB::init(NULL, $CONFIG['db'], AppLogger::scope('pdo'));
@@ -114,21 +129,21 @@ try {
     /**
      * Админка / аутентификация
      */
-    /*AppRouter::get('/admin[/]', 'Auth@view_admin_page');
+    AppRouter::get('/admin[/]', 'Auth@view_admin_page');
     AppRouter::post('/admin', 'Auth@callback_login');
     AppRouter::get('/admin/auth:logout', 'Auth@callback_logout');
-    AppRouter::post('/admin/auth:logout', 'Auth@callback_logout');*/
+    AppRouter::post('/admin/auth:logout', 'Auth@callback_logout');
 
     /**
      * Админка / работа с элементами
      */
-    /*AppRouter::get('/admin/index', 'Admin@view_index'); // главная (и единственная) страница админки - расширенный поиск по объектам
+    AppRouter::get('/admin/index', 'Admin@view_index'); // главная (и единственная) страница админки - расширенный поиск по объектам
     AppRouter::get('/admin/item.add', 'Admin@form_item_add'); // форма добавления организации в админке
     AppRouter::post('/admin/item.insert', 'Admin@callback_item_insert'); // коллбэк добавления организации в админке
     AppRouter::get('/admin/item.edit/{id:\d+}', 'Admin@form_item_edit'); // форма редактирования
     AppRouter::post('/admin/item.update', 'Admin@callback_item_update'); // коллбэк обновления
     AppRouter::get('/admin/item.delete/{id:\d+}', 'Admin@callback_item_delete'); // удаление организации по ID (фото итд)
-    AppRouter::get('/admin/item.toggle/{id:\d+}', 'Admin@ajax_item_toggle'); // toggle visibility*/
+    AppRouter::get('/admin/item.toggle/{id:\d+}', 'Admin@ajax_item_toggle'); // toggle visibility
 
 
     AppRouter::dispatch();
@@ -136,15 +151,30 @@ try {
     echo Template::render();
 
 } catch (AppRouterException $e) {
-    (new \FindFolks\Controllers\Site())->error($e->getMessage());
+    // (new \FindFolks\Controllers\Site())->error($e->getMessage());
+    $exception_code = $e->getCode();
+    $exception_message = $e->getMessage();
 
     if (AppLogger::scope('main') instanceof Psr\Log\LoggerInterface) {
-        AppLogger::scope('main')->emergency('[500] Error', [ $e->getMessage(), $e->getCode() ]);
-        AppLogger::scope('main')->emergency('[500] Stacktrace', [ $e->getTrace() ]);
-    }
+        switch ($exception_code) {
+            case 404: {
+                AppLogger::scope('main')->warning('[404] Error', [ $exception_message, $exception_code ]);
+                break;
+            }
+            case 500: {
+                AppLogger::scope('main')->error('[500] Error', [ $exception_message, $exception_code ]);
+                AppLogger::scope('main')->error('[500] Stacktrace', [ $e->getTrace() ]);
 
-    http_response_code(500);
-    Server::redirect('/templates/500.html', 500, true);
+                http_response_code(500);
+                Server::redirect('/templates/500.html', 500, true);
+
+                break;
+            }
+            default: {
+                AppLogger::scope('main')->alert("[{$e->getCode()}] Undefined error", [ $exception_message, $exception_code ]);
+            }
+        }
+    }
 }
 
 logSiteUsage(AppLogger::scope('site_usage'));
