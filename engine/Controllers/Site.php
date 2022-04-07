@@ -3,6 +3,7 @@
 namespace FindFolks\Controllers;
 
 use Arris\AppLogger;
+use Arris\Helpers\Misc;
 use PDO;
 use Arris\App;
 use Arris\AppConfig;
@@ -171,7 +172,8 @@ class Site
             'address'   =>  $REQUEST['address'] ?? '',
             'fio'       =>  $REQUEST['fio'] ?? '',
             'ticket'    =>  $REQUEST['ticket'] ?? '',
-            'ipv4'      =>  Server::getIP()
+            'ipv4'      =>  Server::getIP(),
+            'guid'      =>  Misc::GUID()            // а должно быть 'UUID()', но требует DBHelper 1.75 (как минимум)
         ];
     }
 

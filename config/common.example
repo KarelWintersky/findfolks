@@ -1,10 +1,21 @@
 # GLOBAL #
 
-IS.PRODUCTION = 1
+IS.PRODUCTION = 0
+
+# Domains #
+
+# DOMAIN = ''
+# DOMAIN.FQDN = ''
+
+DOMAIN = ''
+DOMAIN.FQDN = ''
 
 # Paths #
 
-PATH.INSTALL = "/var/www/findfolks/"
+PATH.INSTALL    = ""
+PATH.LOGS       = ""
+PATH.SMARTY_CACHE = /dev/shm/findfolks_cache_smarty/
+
 VERSION.FILE = "_version"
 
 # Database settings #
@@ -21,10 +32,10 @@ DB.SLOW_QUERY_THRESHOLD = 0.1
 # Sphinx access settings #
 
 SEARCH.ENABLED      = 1
-SEARCH.HOST         = "127.0.0.1"
-SEARCH.PORT         = 9306
-SEARCH.USER         = "root"
-SEARCH.PASSWORD     = ""
+SEARCH.HOST         =   "127.0.0.1"
+SEARCH.PORT         =   9306
+SEARCH.USER         =   "root"
+SEARCH.PASSWORD     =   ""
 SEARCH.INDEX_TYPE   = 'rt'
 SEARCH.RT_INDEX_FOLKS = "rt_findfolks"
 
@@ -36,9 +47,15 @@ REDIS.PORT = 6379
 REDIS.PASSWORD = ''
 REDIS.DATABASE = 2
 
-# Caches #
+# AUTH Settings (hardcoded)
+AUTH.LOGIN          =   ''
+AUTH.PASSWORD       =   ''
+AUTH.KEY.SESSION    =   ''
+AUTH.KEY.COOKIE     =   ''
 
-PATH.SMARTY_CACHE = /dev/shm/findfolks_cache_smarty/
+# Other
+
+SEARCH.WEIGHTS = 'title=20 short=10 text=5'
 
 LOGGING.SITE_USAGE          = 1
 LOGGING.SPHINX_UPDATE_RT    = 1
@@ -47,9 +64,4 @@ LOGGING.SEARCH_REQUESTS     = 1
 FRONTEND.SEARCH.RESULTS_PER_PAGE   = 10
 
 DEBUG.SMARTY_FORCE_COMPILE  = 1
-
-
-
-
-
 

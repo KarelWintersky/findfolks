@@ -14,65 +14,22 @@
     - `common.conf` создать по примеру `common.example`, заполнить данными для подключения к БД
 4. Поставить пакет
 5. Ready?
- 
 
-# Требуемая структура БД:
+# Как обновлять 
 
-```
-CREATE TABLE `tickets` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `dt_create` datetime DEFAULT current_timestamp(),
-  `dt_update` datetime DEFAULT NULL ON UPDATE current_timestamp(),
-  `city` varchar(100) DEFAULT '' COMMENT 'Город',
-  `district` varchar(100) DEFAULT '' COMMENT 'Район/регион',
-  `street` varchar(100) DEFAULT '' COMMENT 'улица',
-  `address` varchar(100) DEFAULT '' COMMENT 'Адрес (номер дома итд)',
-  `fio` varchar(100) DEFAULT '' COMMENT 'ФИО',
-  `ticket` text DEFAULT '' COMMENT 'текст объявления',
-  `ipv4` varchar(14) DEFAULT '127.0.0.1' COMMENT 'ipv4 в строковой форме',
-  `is_verified` tinyint(4) DEFAULT 1 COMMENT 'подтверждено',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='таблица объявлений'
-```
+1. Обновить пакет
 
-# Конфиг nginx
+# Как обновлять с изменением БД?
 
-```
+1. Обновить БД
+2. Обновить пакет
 
-server {
-    listen 80; 
-    server_name <host>;
+# Как обновлять с изменением поискового индекса?
 
-    root        /var/www/findfolks/public;
+1. Обновить пакет
+2. Рестарт мантикоры
+3. Перестроить индексы
 
-    index       index.php index.html;
-
-    access_log  /var/log/nginx/findfolks.access.log;
-    error_log   /var/log/nginx/findfolks.error.log;
-
-    gzip             on;
-    gzip_static      on;
-    gzip_min_length  1000;
-    gzip_proxied     expired no-cache no-store private auth;
-    gzip_types       application/json;
-
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
-
-    location ~ \.php$ {
-        include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_pass php-handler-7-4;
-        fastcgi_index index.php;
-    }
-
-    location ~ favicon.* {
-        access_log off;
-        log_not_found off;
-    }
-}
-```
 
 
 

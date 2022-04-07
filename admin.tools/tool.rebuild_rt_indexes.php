@@ -115,6 +115,7 @@ try {
             'address'       =>  $dataset['address'],
             'fio'           =>  $dataset['fio'],
             'ticket'        =>  $dataset['ticket'],
+            'guid'          =>  $dataset['guid'],
             'date_added'    =>  (new DateTime())->format('U'),
         ];
     }, "");

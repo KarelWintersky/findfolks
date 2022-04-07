@@ -93,10 +93,9 @@ try {
         [ 'error.log', Logger::ERROR ]
     ]);
     AppLogger::addScope('search', [
-        [ 'search.log', Logger::NOTICE ],
-    ]);
-    AppLogger::addScope('search.requests', [
+        [ 'search_update_rt.log', Logger::INFO ],
         [ 'search_requests.log', Logger::NOTICE ],
+        [ 'search_errors.log', Logger::ERROR, 'bubbling' => true ],
     ]);
     AppLogger::addScope('site_usage', [
         [ 'visits.log', Logger::INFO ]
@@ -127,16 +126,19 @@ try {
     AppRouter::init(AppLogger::addScope('router'));
     AppRouter::setDefaultNamespace('\FindFolks\Controllers');
 
-    AppRouter::get('/', 'Site@view_main', 'root');
-    AppRouter::get('/about', 'Site@view_about', 'about');
+    AppRouter::get('/', 'Site@view_main', 'view.root');
+    AppRouter::get('/about', 'Site@view_about', 'view.about');
 
-    AppRouter::get('/add', 'Site@view_add', 'add');
-    AppRouter::post('/add', 'Site@callback_add', 'store');
+    AppRouter::get('/add', 'Site@view_add', 'view.add');
+    AppRouter::post('/add', 'Site@callback_add', 'callback.store');
 
-    AppRouter::get('/search', 'Site@view_search', 'search');
-    AppRouter::post('/ajax:search', 'Site@callback_ajax_search', 'ajax_search');
+    AppRouter::get('/search', 'Site@view_search', 'view.search');
+    AppRouter::post('/ajax:search', 'Site@callback_ajax_search', 'ajax.search');
 
-    AppRouter::get('/list', 'Site@view_list', 'list');
+    AppRouter::get('/list', 'Site@view_list', 'view.list'); // + ?guid=
+
+    // AppRouter::get('/ticket:delete/{\d+}/', 'Site@view_delete_ticket', 'view.delete.ticket'); // форма "удалить ли?"
+    // AppRouter::post('/ticket:delete/{\d+}/', 'Site@callback_delete_ticket', 'callback.delete.ticket'); // коллбэк удаления
 
     /**
      * Админка / аутентификация

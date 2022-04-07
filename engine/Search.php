@@ -4,6 +4,7 @@ namespace FindFolks;
 
 use Arris\AppConfig;
 use Arris\AppLogger;
+use Arris\Helpers\Server;
 use Arris\Toolkit\SphinxToolkit;
 use DateTime;
 use Exception;
@@ -43,6 +44,7 @@ class Search
     public function updateRTIndex(array $dataset, $id = null)
     {
         $CONFIG = AppConfig::get();
+        $logger = AppLogger::scope('search');
 
         $sphinx_target_index = $CONFIG['search.indexes.folks']; // rt_findfolks
 
@@ -55,17 +57,18 @@ class Search
                 'street'        =>  $dataset['street'],
                 'address'       =>  $dataset['address'],
                 'fio'           =>  $dataset['fio'],
-                'ticket'          =>  $dataset['ticket'],
+                'ticket'        =>  $dataset['ticket'],
+                'guid'          =>  $dataset['guid'],
                 'date_added'    =>  (new DateTime())->format('U'),
             ]);
 
-            AppLogger::scope('search.update_rt')->debug('RT-index updated: ', [ $sphinx_target_index, $id, $dataset['title'], $status->getAffectedRows() ]);
+            $logger->info('RT-index updated: ', [ $sphinx_target_index, $id, $dataset['guid'], $status->getAffectedRows() ]);
         }
     }
 
     public function search(array $search_fields, $limit = 50, $page = 1)
     {
-        $this->logger = AppLogger::scope('search');
+        $this->logger = AppLogger::scope('search.requests');
 
         $source_rt_index = $this->config['search.indexes.folks'];
         $request_offset = ($limit * ($page - 1));
@@ -84,7 +87,8 @@ class Search
                 "highlight({before_match='<em>', after_match='</em>', around=1}, 'fio') AS fio",
                 "address",
                 "ticket",
-                "meta"
+                "meta",
+                "guid"
             ]));
 
             $query_dataset = SphinxToolkit::createInstance()
@@ -142,6 +146,8 @@ class Search
                 $dataset[] = $row;
             }
 
+            $this->logger->notice("Requested search from IP, found... ", [ $search_fields, Server::getIP(), count($dataset) ]);
+
         } catch (Exception $e) {
             $error_message = $e->getMessage();
             $this->logger->debug('Error:', [ $error_message ]);
@@ -155,39 +161,6 @@ class Search
             }
         }
         return $dataset;
-    }
-
-    public function ajax_search()
-    {
-        $source_rt_index = getenv('SEARCH.RT_INDEX.PLACES');
-        $search_query = trim($_REQUEST['query']);
-
-        try {
-            if (empty($search_query)) throw new Exception('А что ищем-то?');
-
-            $c_data = SphinxToolkit::initConnection();
-            $i_data = SphinxToolkit::getInstance($c_data);
-
-            $i_data = $i_data
-                ->select(['id', 'title', 'tags','lat', 'lon', 'address'])
-                ->from($source_rt_index)
-                ->limit(100)
-                ->option('field_weights', $this->search_weights)
-                ->orderBy("title", 'DESC')
-                ->match(['title', 'tags', 'address'], SphinxQL::expr($search_query));
-
-            $result_data = $i_data->execute();
-
-            if (empty($result_data)) throw new Exception('Ничего не найдено');
-
-            Template::assign("dataset", $result_data->fetchAllAssoc());
-        } catch (Exception $e) {
-            Template::assign("error_message", $e->getMessage() );
-        }
-
-        Template::setGlobalTemplate("frontpage/search/list.tpl"); // echo render делается после dispatch routing
-
-        // echo Template::render("frontpage/search/list.tpl");
     }
 
     private static function escapeSearchQuery($query)
