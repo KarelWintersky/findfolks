@@ -1,8 +1,14 @@
 button.button--header {
     width: 30%;
     margin: 0 2px 0 2px;
+    font-weight: bold;
+    box-shadow: 2px 2px 2px gray;
+    border-radius: 10px;
+    background-color: beige;
 }
-
+button.button--header:focus {
+    color: blue;
+}
 header {
     text-align: center;
 }

@@ -36,8 +36,10 @@ install: 	##@system Install package. Don't run it manually!!!
 	install -d $(PATH_PROJECT)
 	cp -r public $(PATH_PROJECT)
 	cp -r engine $(PATH_PROJECT)
+	cp -r admin.tools $(PATH_PROJECT)
 	cp -r composer.json $(PATH_PROJECT)
 	cp -r composer.lock $(PATH_PROJECT)
+	cp $(PATH_WWW)/favicon/favicon.ico $(PATH_WWW)/
 	git rev-parse --short HEAD > $(PATH_PROJECT)/_version
 	git log --oneline --format=%B -n 1 HEAD | head -n 1 >> $(PATH_PROJECT)/_version
 	git log --oneline --format="%at" -n 1 HEAD | xargs -I{} date -d @{} +%Y-%m-%d >> $(PATH_PROJECT)/_version
@@ -45,6 +47,7 @@ install: 	##@system Install package. Don't run it manually!!!
 	mkdir -p $(DESTDIR)/etc/$(SEARCH_ENGINE_DIR)/conf.d/$(PROJECT)
 	cp -r config.searchd/* $(DESTDIR)/etc/$(SEARCH_ENGINE_DIR)/conf.d/$(PROJECT)/
 	chown -R manticore:manticore $(DESTDIR)/etc/$(SEARCH_ENGINE_DIR)/conf.d/$(PROJECT)/
+	cp makefile.production-toolkit $(PATH_PROJECT)/makefile
 	install -d $(PATH_PROJECT)/cache
 	install -d $(PATH_PROJECT)/config
 	install -d $(PATH_PROJECT)/logs

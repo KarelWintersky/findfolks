@@ -21,9 +21,10 @@ case "$1" in
         fi
 
         echo "Fixing access rights..."
-        chown -R www-data:www-data ${PATH_PROJECT}/public
-        chown -R www-data:www-data ${PATH_PROJECT}/logs
-        chown -R www-data:www-data ${PATH_PROJECT}/config
+        chown -R www-data:www-data ${PATH_PROJECT}
+#        chown -R www-data:www-data ${PATH_PROJECT}/public
+#        chown -R www-data:www-data ${PATH_PROJECT}/logs
+#        chown -R www-data:www-data ${PATH_PROJECT}/config
         echo "${ANSI_GREEN} Ok. ${ANSI_RESET}"
 
         echo

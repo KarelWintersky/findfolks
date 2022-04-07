@@ -18,6 +18,7 @@
 </head>
 <body>
     <header>
+        <img src="/images/photo_2020-05-27_02-36-25.jpg" alt="" width="100%">
         <h2>Ищем родных</h2>
         <div style="display: flex;align-items: center;justify-content: space-between;">
             <button class="large button--header" onclick="window.location.href='/add'">Добавить объявление</button>

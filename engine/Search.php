@@ -78,12 +78,6 @@ class Search
             $query_expression = SphinxQL::expr(implode(', ', [
                 'id',
                 "date_added",
-                /*"highlight({before_match='<em>',after_match='</em>', field_separator=' '}, 'city, district, street, fio')",*/
-                /*"highlight({before_match='<em>',after_match='</em>', field_separator=' '}, 'city, district') AS city_district",
-                "highlight({before_match='<em>',after_match='</em>', field_separator=' '}, 'street') AS street ",
-                "address",
-                "highlight({before_match='<em>',after_match='</em>'}, 'fio') AS fio",*/
-                /*"city", "district", "street", "fio",*/
                 "highlight({before_match='<em>', after_match='</em>', around=1}, 'city') AS city",
                 "highlight({before_match='<em>', after_match='</em>', around=1}, 'district') AS district",
                 "highlight({before_match='<em>', after_match='</em>', around=1}, 'street') AS street",

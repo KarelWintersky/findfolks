@@ -5,6 +5,7 @@ IS.PRODUCTION = 1
 # Paths #
 
 PATH.INSTALL = "/var/www/findfolks/"
+VERSION.FILE = "_version"
 
 # Database settings #
 
