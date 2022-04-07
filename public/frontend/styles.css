@@ -1,6 +1,24 @@
+ul.menuItems {
+    background: none;
+    /*height: 70px;*/
+    /*width: 100px;*/
+    margin: 0;
+    padding: 0;
+}
+ul.menuItems , li {
+    display: inline;
+    list-style: none;
+    margin-left: auto;
+    margin-right: auto;
+    top: 0px;
+    /*height: 70px;*/
+}
+
 button.large {
-    width: 20%;
-    font-size: x-large;
+    width: 10%;
+    height: 70px;
+    overflow: hidden;
+    font-size: large;
 }
 
 table.add {
@@ -12,13 +30,25 @@ td.hint {
     font-size: larger;
 }
 
-textarea {}
+textarea {
+    font-size: large;
+    width: 80%;
+}
 
 input {
     font-size: large;
-    width: 60%;
+    width: 80%;
 }
 
 *[required]::placeholder {
     color: red;
+}
+
+#search_results em {
+    color: blue;
+}
+
+.copy {
+    color: gainsboro;
+    font-size: small;
 }

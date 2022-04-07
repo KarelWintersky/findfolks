@@ -34,6 +34,7 @@
         </td>
     </tr>
 </table>
+<hr>
 <div id="search_results">
 
 </div>

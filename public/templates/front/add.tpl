@@ -43,7 +43,7 @@
                 Объявление
             </td>
             <td>
-                <textarea name="ticket" placeholder="Ваше объявление" rows="5" cols="30" tabindex="6" {if $is_production}required{/if}></textarea>
+                <textarea name="ticket" placeholder="Ваше объявление" rows="5" cols="60" tabindex="6" {if $is_production}required{/if}></textarea>
             </td>
         </tr>
         <tr>
@@ -53,3 +53,4 @@
         </tr>
     </table>
 </form>
+<hr>

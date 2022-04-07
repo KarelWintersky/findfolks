@@ -1,0 +1,11 @@
+findfolks (0.1) stable; urgency=medium
+
+  * [R] Stable release V1
+
+ -- Karel Wintersky <karel.wintersky@yandex.ru>  Thu, 07 Apr 2022 10:18:50 +0300
+
+findfolks (0.0.7) unstable; urgency=medium
+
+  * Initial release. (Closes: #XXXXXX)
+
+ -- Karel Wintersky <karel.wintersky@gmail.com>  Thu, 07 Apr 2022 09:44:37 +0300

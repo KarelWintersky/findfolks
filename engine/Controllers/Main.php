@@ -2,6 +2,7 @@
 
 namespace FindFolks\Controllers;
 
+use Arris\AppLogger;
 use PDO;
 use Arris\App;
 use Arris\AppConfig;
@@ -58,7 +59,7 @@ class Main
      */
     public function view_list()
     {
-        $sth = $this->pdo->query("SELECT * FROM tickets ORDER BY dt_create DESC");
+        $sth = $this->pdo->query("SELECT *, DATE_FORMAT(dt_create, '%H:%i / %d.%m.%Y') AS cdate FROM tickets ORDER BY dt_create DESC");
 
         $list = $sth->fetchAll();
 
@@ -115,7 +116,21 @@ class Main
 
     public function callback_ajax_search()
     {
-        dd($_REQUEST);
+        $this->logger = AppLogger::scope('search.desktop');
+
+        $search_fields = [
+            'city'      =>  $_REQUEST['city'] ?? '',
+            'district'  =>  $_REQUEST['district'] ?? '',
+            'street'    =>  $_REQUEST['street'] ?? '',
+            'fio'       =>  $_REQUEST['fio'] ?? ''
+        ];
+
+        // $search_query = Search::escapeSearchQuery($_REQUEST['query']);
+
+        $dataset = (new Search())->search($search_fields);
+
+        Template::assign("dataset", $dataset);
+        Template::setGlobalTemplate("front/search_ajaxed.tpl");
     }
 
 

@@ -52,6 +52,7 @@ try {
         'hostname'      =>  getenv('SEARCH.HOST'),
         'port'          =>  getenv('SEARCH.PORT'),
         'is_enabled'    =>  getenv('SEARCH.ENABLED'),
+        'enabled'       =>  getenv('SEARCH.ENABLED'),
         'index_type'    =>  getenv('SEARCH.INDEX_TYPE'),
         'indexes'       =>  [
             'folks'        =>  getenv('SEARCH.RT_INDEX_FOLKS')
@@ -105,7 +106,7 @@ try {
     AppRouter::post('/add', 'Main@callback_add', 'store');
 
     AppRouter::get('/search', 'Main@view_search', 'search');
-    AppRouter::get('/ajax:search', 'Main@callback_ajax_search', 'ajax_search');
+    AppRouter::post('/ajax:search', 'Main@callback_ajax_search', 'ajax_search');
 
     AppRouter::get('/list', 'Main@view_list', 'list');
 

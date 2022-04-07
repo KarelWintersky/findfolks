@@ -1,0 +1,54 @@
+# GLOBAL #
+
+IS.PRODUCTION = 1
+
+# Paths #
+
+PATH.INSTALL = "/var/www/findfolks/"
+
+# Database settings #
+
+DB.DRIVER       = "mysql"
+DB.HOST         = "127.0.0.1"
+DB.PORT         = 3306
+DB.USERNAME     = "root"
+DB.PASSWORD     = ""
+DB.NAME         = "findfolks"
+
+DB.SLOW_QUERY_THRESHOLD = 0.1
+
+# Sphinx access settings #
+
+SEARCH.ENABLED      = 1
+SEARCH.HOST         = "127.0.0.1"
+SEARCH.PORT         = 9306
+SEARCH.USER         = "root"
+SEARCH.PASSWORD     = ""
+SEARCH.INDEX_TYPE   = 'rt'
+SEARCH.RT_INDEX_FOLKS = "rt_findfolks"
+
+# REDIS
+
+REDIS.ENABLED = 0
+REDIS.HOST = 'localhost'
+REDIS.PORT = 6379
+REDIS.PASSWORD = ''
+REDIS.DATABASE = 2
+
+# Caches #
+
+PATH.SMARTY_CACHE = /dev/shm/findfolks_cache_smarty/
+
+LOGGING.SITE_USAGE          = 1
+LOGGING.SPHINX_UPDATE_RT    = 1
+LOGGING.SEARCH_REQUESTS     = 1
+
+FRONTEND.SEARCH.RESULTS_PER_PAGE   = 10
+
+DEBUG.SMARTY_FORCE_COMPILE  = 1
+
+
+
+
+
+
