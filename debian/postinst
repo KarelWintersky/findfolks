@@ -22,14 +22,14 @@ case "$1" in
         fi
 
         echo "Making symlinks"
-        ln -sf $(PATH_PUBLIC)/favicon/favicon.ico $(PATH_PUBLIC)/favicon.ico
-        ln -sf $(PATH_PUBLIC)/favicon/apple-touch-icon.png $(PATH_PUBLIC)/apple-touch-icon-precomposed.png
-        ln -sf $(PATH_PUBLIC)/favicon/android-chrome-192x192.png $(PATH_PUBLIC)/android-chrome-192x192.png
-        ln -sf $(PATH_PUBLIC)/favicon/android-chrome-512x512.png $(PATH_PUBLIC)/android-chrome-512x512.png
+        ln -sf ${PATH_PUBLIC}/favicon/favicon.ico ${PATH_PUBLIC}/favicon.ico
+        ln -sf ${PATH_PUBLIC}/favicon/apple-touch-icon.png ${PATH_PUBLIC}/apple-touch-icon-precomposed.png
+        ln -sf ${PATH_PUBLIC}/favicon/android-chrome-192x192.png ${PATH_PUBLIC}/android-chrome-192x192.png
+        ln -sf ${PATH_PUBLIC}/favicon/android-chrome-512x512.png ${PATH_PUBLIC}/android-chrome-512x512.png
         echo "  Ok"
 
         echo " Building /robots.txt file..."
-        php ${PATH_PROJECT}/admin.tools/postinst.php --make:robots
+        php ${PATH_PROJECT}/admin.tools/tool.postinst.php --make:robots
         echo "  Ok"
 
         echo "Fixing access rights..."

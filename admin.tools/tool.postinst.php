@@ -52,7 +52,7 @@ HOWTOUSE
      */
     $_path_install = Path::create( getenv('PATH.INSTALL'));
     
-    if ($options['clear:smarty'] && getenv('PATH.SMARTY_CACHE')) {
+    /*if ($options['clear:smarty'] && getenv('PATH.SMARTY_CACHE')) {
         $smarty_cache_directory = Path::create( getenv('PATH.SMARTY_CACHE') )->toString();
         
         if (!is_dir($smarty_cache_directory)) {
@@ -67,7 +67,7 @@ HOWTOUSE
         }
     
         CLIConsole::say("SMARTY cache cleared.");
-    }
+    }*/
     
     if ($options['make:robots']) {
         $host = getenv('DOMAIN');
