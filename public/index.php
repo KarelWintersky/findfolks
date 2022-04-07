@@ -100,27 +100,45 @@ try {
     AppRouter::init(AppLogger::addScope('router'));
     AppRouter::setDefaultNamespace('\FindFolks\Controllers');
 
-    AppRouter::get('/', 'Main@view_main', 'root');
-    AppRouter::get('/about', 'Main@view_about', 'about');
+    AppRouter::get('/', 'Site@view_main', 'root');
+    AppRouter::get('/about', 'Site@view_about', 'about');
 
-    AppRouter::get('/add', 'Main@view_add', 'add');
-    AppRouter::post('/add', 'Main@callback_add', 'store');
+    AppRouter::get('/add', 'Site@view_add', 'add');
+    AppRouter::post('/add', 'Site@callback_add', 'store');
 
-    AppRouter::get('/search', 'Main@view_search', 'search');
-    AppRouter::post('/ajax:search', 'Main@callback_ajax_search', 'ajax_search');
+    AppRouter::get('/search', 'Site@view_search', 'search');
+    AppRouter::post('/ajax:search', 'Site@callback_ajax_search', 'ajax_search');
 
-    AppRouter::get('/list', 'Main@view_list', 'list');
+    AppRouter::get('/list', 'Site@view_list', 'list');
 
-    // AppRouter::get('/admin', 'API@getStats');
+    /**
+     * Админка / аутентификация
+     */
+    /*AppRouter::get('/admin[/]', 'Auth@view_admin_page');
+    AppRouter::post('/admin', 'Auth@callback_login');
+    AppRouter::get('/admin/auth:logout', 'Auth@callback_logout');
+    AppRouter::post('/admin/auth:logout', 'Auth@callback_logout');*/
+
+    /**
+     * Админка / работа с элементами
+     */
+    /*AppRouter::get('/admin/index', 'Admin@view_index'); // главная (и единственная) страница админки - расширенный поиск по объектам
+    AppRouter::get('/admin/item.add', 'Admin@form_item_add'); // форма добавления организации в админке
+    AppRouter::post('/admin/item.insert', 'Admin@callback_item_insert'); // коллбэк добавления организации в админке
+    AppRouter::get('/admin/item.edit/{id:\d+}', 'Admin@form_item_edit'); // форма редактирования
+    AppRouter::post('/admin/item.update', 'Admin@callback_item_update'); // коллбэк обновления
+    AppRouter::get('/admin/item.delete/{id:\d+}', 'Admin@callback_item_delete'); // удаление организации по ID (фото итд)
+    AppRouter::get('/admin/item.toggle/{id:\d+}', 'Admin@ajax_item_toggle'); // toggle visibility*/
+
 
     AppRouter::dispatch();
 
     echo Template::render();
 
 } catch (AppRouterException $e) {
-    (new \FindFolks\Controllers\Main())->error($e->getMessage());
+    (new \FindFolks\Controllers\Site())->error($e->getMessage());
 
-    if (AppLogger::scope('main') instanceof \Monolog\Logger) {
+    if (AppLogger::scope('main') instanceof Psr\Log\LoggerInterface) {
         AppLogger::scope('main')->emergency('[500] Error', [ $e->getMessage(), $e->getCode() ]);
         AppLogger::scope('main')->emergency('[500] Stacktrace', [ $e->getTrace() ]);
     }

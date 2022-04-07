@@ -13,7 +13,7 @@ use Nette\Utils\Validators;
 use FindFolks\Search;
 use FindFolks\TemplateSmarty as Template;
 
-class Main
+class Site
 {
     /**
      * @var App
