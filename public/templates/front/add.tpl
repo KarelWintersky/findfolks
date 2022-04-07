@@ -35,7 +35,7 @@
                 ФИО
             </td>
             <td>
-                <input type="text" name="fio" value="" placeholder="Фамилия, имя, отчество" tabindex="5" {if $is_production}required{/if}>
+                <input type="text" name="fio" value="" placeholder="Фамилия, имя, желательно отчество" tabindex="5" {if $is_production}required{/if}>
             </td>
         </tr>
         <tr>

@@ -10,8 +10,8 @@
     {*{include file="_inner/meta_opengraph.tpl"}*}
 
     <script src="/frontend/jquery-3.6.0.min.js" type="text/javascript"></script>
-    <link href="/frontend/styles.css" rel="stylesheet">
-    <script src="/frontend/scripts.js" type="text/javascript"></script>
+    <link href="/frontend/styles.css?v={$app_version}" rel="stylesheet">
+    <script src="/frontend/scripts.js?v={$app_version}" type="text/javascript"></script>
     <style>
 
     </style>
@@ -19,7 +19,13 @@
 <body>
     <header>
         <h2>Ищем родных</h2>
-        <table width="99%">
+        <div style="display: flex;align-items: center;justify-content: space-between;">
+            <button class="large button--header" onclick="window.location.href='/add'">Добавить объявление</button>
+            <button class="large button--header" onclick="window.location.href='/search'">Искать</button>
+            <button class="large button--header" onclick="window.location.href='/list'">Список объявлений</button>
+            {*<button class="large" onclick="window.location.href='/about'" style="width: 2em">?</button>*}
+        </div>
+        {*<table width="99%">
             <tr>
                 <td width="33%">
                     <button class="large" onclick="window.location.href='/add'">Добавить объявление</button>
@@ -30,11 +36,11 @@
                 <td width="33%">
                     <button class="large" onclick="window.location.href='/list'">Список объявлений</button>
                 </td>
-                {*<td width="25%">
+                *}{*<td width="25%">
                     <button class="large" onclick="window.location.href='/about'" style="width: 2em">?</button>
-                </td>*}
+                </td>*}{*
             </tr>
-        </table>
+        </table>*}
         <br/>
     </header>
     <main>

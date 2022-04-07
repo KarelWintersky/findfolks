@@ -1,6 +1,7 @@
 <?php
 
 use Arris\DB;
+use Arris\Path;
 use Dotenv\Dotenv;
 
 /**
@@ -84,3 +85,37 @@ function pluralForm($number, $forms, string $glue = '|')
 
     return $number % 10 == 1 && $number % 100 != 11 ? $forms[0] : ($number % 10 >= 2 && $number % 10 <= 4 && ($number % 100 < 10 || $number % 100 >= 20) ? $forms[1] : $forms[2]);
 }
+
+/**
+ * @todo: Updated version, move to Arris\helpers
+ * @return array
+ */
+function getEngineVersion():array
+{
+    $version_file = Path::create( getenv('PATH.INSTALL') )->joinName( getenv('VERSION.FILE') )->toString();
+    $version = [
+        'date'      =>  date_format( date_create(), 'r'),
+        'user'      => 'local',
+        'summary'   => 'latest'
+    ];
+
+    if (getenv('VERSION')) {
+        $version['summary'] = getenv('VERSION');
+    } elseif (
+        getenv('PATH.INSTALL') &&
+        getenv('VERSION.FILE') &&
+        $version_file = Path::create( getenv('PATH.INSTALL') )->joinName( getenv('VERSION.FILE') )->toString() &&
+            is_readable($version_file)
+    ) {
+        $array = file($version_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
+        $version = [
+            'date'      => $array[1],
+            'user'      => 'local',
+            'summary'   => $array[0]
+        ];
+    }
+
+    return $version;
+}
+

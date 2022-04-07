@@ -31,6 +31,7 @@ class Main
         $this->sheets = $this->app->get('sheets');
         $this->pdo = $this->app->get('pdo');
 
+        Template::assign("app_version", $this->app->get('app.version'));
         Template::setGlobalTemplate("index.tpl");
     }
 

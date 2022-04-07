@@ -23,6 +23,7 @@ try {
 
     $app = App::factory();
     $app->add('config', []);
+    $app->add('app.version', sha1(getEngineVersion()['date']));
 
     $CONFIG = new \Arris\Core\Dot();
     AppConfig::init($CONFIG);

@@ -1,3 +1,8 @@
+button.button--header {
+    width: 30%;
+    margin: 0 2px 0 2px;
+}
+
 header {
     text-align: center;
 }
