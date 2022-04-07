@@ -33,8 +33,15 @@ try {
 
     $CONFIG['path'] = [
         'install'   =>  $_path_install->toString(true),
+        'web'       =>  $_path_install->join('public')->toString(true),
     ];
-    $CONFIG['path.web'] = $_path_install->join('public')->toString(true);
+
+    $CONFIG['auth'] = [
+        'login'         =>  getenv('AUTH.LOGIN'),
+        'password'      =>  getenv('AUTH.PASSWORD'),
+        'key_cookie'    =>  getenv('AUTH.KEY.COOKIE'),
+        'key_session'   =>  getenv('AUTH.KEY.SESSION'),
+    ];
 
     $CONFIG['flags'] = [
         'is_production' =>  (bool)getenv('IS.PRODUCTION')
