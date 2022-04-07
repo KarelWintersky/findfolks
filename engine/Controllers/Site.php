@@ -52,7 +52,7 @@ class Site
         Template::assign("dataset_count", count($list));
 
         // показать top-10 добавленных записей
-        Template::assign("inner_template", "front/main.tpl");
+        Template::assign("inner_template", "site/main.tpl");
     }
 
     /**
@@ -67,7 +67,7 @@ class Site
         Template::assign("dataset", $list);
         Template::assign("dataset_count", count($list));
 
-        Template::assign("inner_template", "front/main.tpl");
+        Template::assign("inner_template", "site/main.tpl");
     }
 
     /**
@@ -76,7 +76,7 @@ class Site
     public function view_add()
     {
         Template::assign("is_production", AppConfig::get()['flags.is_production']);
-        Template::assign("inner_template", "front/add.tpl");
+        Template::assign("inner_template", "site/add.tpl");
     }
 
     /**
@@ -103,7 +103,7 @@ class Site
      */
     public function view_about()
     {
-        Template::assign("inner_template", "front/about.tpl");
+        Template::assign("inner_template", "site/about.tpl");
     }
 
     /**
@@ -112,7 +112,7 @@ class Site
     public function view_search()
     {
         Template::assign("is_production", AppConfig::get()['flags.is_production']);
-        Template::assign("inner_template", "front/search.tpl");
+        Template::assign("inner_template", "site/search.tpl");
     }
 
     public function callback_ajax_search()
@@ -131,7 +131,7 @@ class Site
         $dataset = (new Search())->search($search_fields);
 
         Template::assign("dataset", $dataset);
-        Template::setGlobalTemplate("front/search_ajaxed.tpl");
+        Template::setGlobalTemplate("site/search_ajaxed.tpl");
     }
 
 

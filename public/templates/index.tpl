@@ -18,7 +18,7 @@
 </head>
 <body>
     <header>
-        <img src="/images/photo_2020-05-27_02-36-25.jpg" alt="" width="100%">
+        {if $is_production}<img src="/images/photo_2020-05-27_02-36-25.jpg" alt="" width="100%">{/if}
         <h2>Ищем родных</h2>
         <div style="display: flex;align-items: center;justify-content: space-between;">
             <button class="large button--header" onclick="window.location.href='/add'">Добавить объявление</button>
@@ -33,7 +33,7 @@
         {include file=$inner_template}
     </main>
     <footer>
-        <div class="copy">&copy;ООО Психотроника</div>
+        <div class="copy">&copy; 2022, ООО Психотроника</div>
     </footer>
 </body>
 </html>

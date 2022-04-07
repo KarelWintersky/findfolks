@@ -90,6 +90,11 @@ class TemplateSmarty
     public static $redirect = null;
 
     /**
+     * @var int
+     */
+    private static $redirect_code;
+
+    /**
      *
      * @param $smarty_instance
      * @param array $options
@@ -138,7 +143,7 @@ class TemplateSmarty
      */
     public static function assign($keys, $value = null, $nocache = false)
     {
-        self::$smarty->assign($keys, $value, $nocache);
+        self::$smarty->assign($keys, $value, $nocache); //@todo: lazy assign
     }
 
     /**
@@ -156,9 +161,11 @@ class TemplateSmarty
         }
 
         if (self::$redirect) {
-            header("Location: " . self::$redirect);
+            header("Location: " . self::$redirect, true, self::$redirect_code);
             return '';
         }
+
+        // если сделаем LAZY ASSIGN - вот тут нужно будет сделать реальный assign в цикле
 
         if (!is_null($template_file)) {
             $return = self::$smarty->fetch( $template_file );
@@ -233,9 +240,10 @@ class TemplateSmarty
         self::$mime_type = $mime_type;
     }
 
-    public static function setRedirect($target)
+    public static function setRedirect($target, $redirect_code = 302)
     {
         self::$redirect = $target;
+        self::$redirect_code = (int)$redirect_code;
     }
 
 }
