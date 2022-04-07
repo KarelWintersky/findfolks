@@ -1,0 +1,51 @@
+{
+    "name": "karelwintersky/findfolks",
+    "description": "Find Folks",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Karel Wintersky",
+            "email": "karel.wintersky@yandex.ru"
+        }
+    ],
+    "config": {
+        "platform-check": false
+    },
+    "require": {
+        "php": ">=7.3",
+        "ext-curl": "*",
+        "ext-gd": "*",
+        "ext-mysqli": "*",
+        "ext-mbstring": "*",
+        "ext-iconv": "*",
+        "ext-intl": "*",
+        "ext-simplexml": "*",
+        "ext-xmlwriter": "*",
+        "ext-json": "*",
+        "ext-pdo": "*",
+        "ext-fileinfo": "*",
+        "vlucas/phpdotenv": "^3.3",
+        "foolz/sphinxql-query-builder": "^2.0",
+        "karelwintersky/arris": "^1.74",
+        "karelwintersky/arris.helpers": "^0.4.0",
+        "psr/log": "^1.1",
+        "spatie/regex": "^1.4",
+        "karelwintersky/arris.toolkit.sphinx": "^1.9",
+        "ajur-media/fluentpdo": "^1.0",
+        "smarty/smarty": "^4.1",
+        "nette/utils": "^3.2"
+    }
+    ,
+    "require-dev": {
+        "roave/security-advisories": "dev-latest"
+    },
+    "autoload": {
+        "psr-4": {
+            "FindFolks\\": "engine/"
+        },
+        "files": [
+            "engine/helpers.php"
+        ]
+    }
+}
