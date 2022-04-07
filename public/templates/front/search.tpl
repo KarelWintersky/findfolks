@@ -29,8 +29,9 @@
         </td>
     </tr>
     <tr>
-        <td colspan="2">
-            <button type="button" id="actor-search" tabindex="6">Искать</button>
+        <td colspan="2" class="center">
+            <br/>
+            <button type="button" class="search-button" id="actor-search" tabindex="6">Искать</button>
         </td>
     </tr>
 </table>

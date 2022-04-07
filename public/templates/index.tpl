@@ -18,12 +18,23 @@
 </head>
 <body>
     <header>
-        <ul class="menuItems">
-            <li><button class="large" onclick="window.location.href='/add'">Добавить объявление</button></li>
-            <li><button class="large" onclick="window.location.href='/search'">Искать по объявлениям</button></li>
-            <li><button class="large" onclick="window.location.href='/list'">Список объявлений</button></li>
-            <li><button class="large" onclick="window.location.href='/about'" style="width: 2em">?</button></li>
-        </ul>
+        <h2>Ищем родных</h2>
+        <table width="99%">
+            <tr>
+                <td width="33%">
+                    <button class="large" onclick="window.location.href='/add'">Добавить объявление</button>
+                </td>
+                <td width="33%">
+                    <button class="large" onclick="window.location.href='/search'">Искать по объявлениям</button>
+                </td>
+                <td width="33%">
+                    <button class="large" onclick="window.location.href='/list'">Список объявлений</button>
+                </td>
+                {*<td width="25%">
+                    <button class="large" onclick="window.location.href='/about'" style="width: 2em">?</button>
+                </td>*}
+            </tr>
+        </table>
         <br/>
     </header>
     <main>

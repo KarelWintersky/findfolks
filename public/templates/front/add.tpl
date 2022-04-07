@@ -47,7 +47,8 @@
             </td>
         </tr>
         <tr>
-            <td colspan="2">
+            <td colspan="2" class="center">
+                <br/>
                 <input type="submit" value="Подать объявление">
             </td>
         </tr>

@@ -1,28 +1,15 @@
-ul.menuItems {
-    background: none;
-    /*height: 70px;*/
-    /*width: 100px;*/
-    margin: 0;
-    padding: 0;
+header {
+    text-align: center;
 }
-ul.menuItems , li {
-    display: inline;
-    list-style: none;
-    margin-left: auto;
-    margin-right: auto;
-    top: 0px;
-    /*height: 70px;*/
-}
-
 button.large {
-    width: 10%;
+    width: 100%;
     height: 70px;
     overflow: hidden;
     font-size: large;
 }
 
 table.add {
-    width: 90%;
+    width: 100%;
 }
 
 td.hint {
@@ -32,12 +19,12 @@ td.hint {
 
 textarea {
     font-size: large;
-    width: 80%;
+    width: 90%;
 }
 
 input {
     font-size: large;
-    width: 80%;
+    width: 90%;
 }
 
 *[required]::placeholder {
@@ -51,4 +38,13 @@ input {
 .copy {
     color: gainsboro;
     font-size: small;
+}
+
+.center {
+    text-align: center;
+}
+.search-button {
+    font-size: large;
+    height: 70px;
+    min-width: 50%;
 }
