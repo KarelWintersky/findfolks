@@ -1,3 +1,12 @@
+findfolks (0.1.19) stable; urgency=medium
+
+  * [R] pre 0.2.0 release
+  * [+] добавлена коллбэк-форма для добавленного объявления (с секретными ссылками на удаление и просмотр)
+  * [+] добавлен обработчик удаления сообщения по секретной ссылке
+  * [*] при удалении удаляются данные из RT-индекса
+
+ -- Karel Wintersky <karel.wintersky@yandex.ru>  Fri, 08 Apr 2022 03:47:38 +0300
+
 findfolks (0.1.17) stable; urgency=medium
 
   * [*] postinst fix
