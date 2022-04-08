@@ -1,3 +1,9 @@
+findfolks (0.2.1) stable; urgency=medium
+
+  * [+] добавлен телефон общественной приёмной
+
+ -- Karel Wintersky <karel.wintersky@yandex.ru>  Fri, 08 Apr 2022 04:10:20 +0300
+
 findfolks (0.2.0) stable; urgency=medium
 
   * [R] Release
