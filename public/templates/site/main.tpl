@@ -1,8 +1,8 @@
 {if $callback_message}
-    <div class="nb">{$callback_message}</div>
+    <p class="warning">{$callback_message}</p>
 {/if}
 {if $dataset_count > 0}
-Последние {$dataset_count} {$dataset_count|pluralForm:['объявление', 'объявления', 'объявлений']}: <br /><br />
+Найдено {$dataset_count} {$dataset_count|pluralForm:['объявление', 'объявления', 'объявлений']}: <br /><br />
 {else}
     Объявлений пока нет
 {/if}

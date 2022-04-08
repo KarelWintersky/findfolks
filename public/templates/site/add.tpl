@@ -1,4 +1,4 @@
-<h1>Укажите пожалуйста данные для вашего объявления</h1>
+<h1>Укажите пожалуйста свои данные</h1>
 {if $is_production}<h3>Обязательные поля выделены красным</h3>{/if}
 <form action="/add" method="post">
     <table class="add">
@@ -44,6 +44,11 @@
             </td>
             <td>
                 <textarea name="ticket" placeholder="Ваше объявление" rows="5" cols="60" tabindex="6" {if $is_production}required{/if}></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <em>Пожалуйста, не создавайте одно и то же сообщение несколько раз. Вероятность успешного поиска от этого не увеличится.</em>
             </td>
         </tr>
         <tr>

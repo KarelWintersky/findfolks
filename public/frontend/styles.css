@@ -1,3 +1,5 @@
+/* САЙТ */
+/* КНОПКИ В ШАПКЕ */
 button.button--header {
     width: 30%;
     margin: 0 2px 0 2px;
@@ -8,6 +10,11 @@ button.button--header {
 }
 button.button--header:focus {
     color: blue;
+}
+
+.warning {
+    font-size: large;
+    color: red;
 }
 header {
     text-align: center;

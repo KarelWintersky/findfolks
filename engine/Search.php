@@ -66,6 +66,20 @@ class Search
         }
     }
 
+    public function deleteRTIndex($guid)
+    {
+        $CONFIG = AppConfig::get();
+        $logger = AppLogger::scope('search');
+
+        $sphinx_target_index = $CONFIG['search.indexes.folks']; // rt_findfolks
+        if ($CONFIG['search.is_enabled'] && $CONFIG['search.index_type'] == 'rt' && !empty($sphinx_target_index)) {
+
+            $status = SphinxToolkit::rt_DeleteIndex($sphinx_target_index, 'guid', $guid);
+
+            $logger->info('RT-index deleted: ', [ $sphinx_target_index, $guid, $status->getAffectedRows() ]);
+        }
+    }
+
     public function search(array $search_fields, $limit = 50, $page = 1)
     {
         $this->logger = AppLogger::scope('search.requests');

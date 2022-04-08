@@ -26,11 +26,16 @@ class Site
      */
     private $pdo;
 
+    /**
+     * @var Search
+     */
+    private $search;
+
     public function __construct()
     {
         $this->app = App::factory();
-        $this->sheets = $this->app->get('sheets');
         $this->pdo = $this->app->get('pdo');
+        $this->search = new Search();
 
         Template::assign("app_version", $this->app->get('app.version'));
         Template::setGlobalTemplate("index.tpl");
@@ -46,7 +51,7 @@ class Site
             unset($_SESSION['callback_add_message']);
         }
 
-        $sth = $this->pdo->query("SELECT * FROM tickets ORDER BY dt_create DESC LIMIT 10");
+        $sth = $this->pdo->query("SELECT *, DATE_FORMAT(dt_create, '%H:%i / %d.%m.%Y') AS cdate FROM tickets ORDER BY dt_create DESC LIMIT 10");
         $list = $sth->fetchAll();
 
         Template::assign("dataset", $list);
@@ -57,11 +62,18 @@ class Site
     }
 
     /**
-     * VIEW: полный список
+     * VIEW: полный список (возможно, с уточнением)
      */
     public function view_list()
     {
-        $sth = $this->pdo->query("SELECT *, DATE_FORMAT(dt_create, '%H:%i / %d.%m.%Y') AS cdate FROM tickets ORDER BY dt_create DESC");
+        if (isset($_REQUEST['guid']) && strlen($_REQUEST['guid']) === 36) {
+            $sth = $this->pdo->prepare("SELECT *, DATE_FORMAT(dt_create, '%H:%i / %d.%m.%Y') AS cdate FROM tickets WHERE UPPER(guid) = :guid");
+            $sth->execute([
+                'guid'  =>  mb_strtoupper($_REQUEST['guid'])
+            ]);
+        } else {
+            $sth = $this->pdo->query("SELECT *, DATE_FORMAT(dt_create, '%H:%i / %d.%m.%Y') AS cdate FROM tickets ORDER BY dt_create DESC");
+        }
 
         $list = $sth->fetchAll();
 
@@ -91,12 +103,18 @@ class Site
         $sth = $this->pdo->prepare($query);
         $sth->execute($dataset);
 
+        $lid = $this->pdo->lastInsertId();
+
         // добавить в поисковый индекс
-        (new Search())->updateRTIndex($dataset, $this->pdo->lastInsertId());
+        $this->search->updateRTIndex($dataset, $lid);
+
+        Template::assign("guid", $dataset['guid']);
+        Template::assign("ticket_id", $lid);
+        Template::assign("inner_template", "site/add_callback.tpl");
 
         // скомандовать редирект
-        $_SESSION['callback_add_message'] = "Ваше объявление добавлено. Оно будет рассмотрено автоматической системой модерации и добавлено в нашу базу";
-        Template::setRedirect("/");
+        // $_SESSION['callback_add_message'] = "Ваше объявление добавлено. Оно будет рассмотрено автоматической системой модерации и добавлено в нашу базу";
+        // Template::setRedirect("/");
     }
 
     /**
@@ -129,10 +147,37 @@ class Site
 
         // $search_query = Search::escapeSearchQuery($_REQUEST['query']);
 
-        $dataset = (new Search())->search($search_fields);
+        $dataset = $this->search->search($search_fields);
 
         Template::assign("dataset", $dataset);
         Template::setGlobalTemplate("site/search_ajaxed.tpl");
+    }
+
+    public function view_delete_ticket($guid)
+    {
+        Template::assign("guid", $guid);
+
+        $sth = $this->pdo->prepare("SELECT *, DATE_FORMAT(dt_create, '%H:%i / %d.%m.%Y') AS cdate FROM tickets WHERE UPPER(guid) = :guid");
+        $sth->execute([
+            'guid'  =>  mb_strtoupper($guid)
+        ]);
+        $row = $sth->fetch();
+
+        Template::assign("row", $row);
+        Template::setGlobalTemplate("site/delete_ticket.tpl");
+    }
+
+    public function callback_delete_ticket($guid)
+    {
+        $sth = $this->pdo->prepare("DELETE FROM tickets WHERE UPPER(guid) = :guid");
+        $sth->execute([
+            'guid'  =>  mb_strtoupper($guid)
+        ]);
+
+        $this->search->deleteRTIndex($guid);
+
+        $_SESSION['callback_add_message'] = "Ваше объявление было удалено";
+        Template::setRedirect("/");
     }
 
 
@@ -173,7 +218,7 @@ class Site
             'fio'       =>  $REQUEST['fio'] ?? '',
             'ticket'    =>  $REQUEST['ticket'] ?? '',
             'ipv4'      =>  Server::getIP(),
-            'guid'      =>  Misc::GUID()            // а должно быть 'UUID()', но требует DBHelper 1.75 (как минимум)
+            'guid'      =>  Misc::GUID()
         ];
     }
 

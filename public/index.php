@@ -137,8 +137,8 @@ try {
 
     AppRouter::get('/list', 'Site@view_list', 'view.list'); // + ?guid=
 
-    // AppRouter::get('/ticket:delete/{\d+}/', 'Site@view_delete_ticket', 'view.delete.ticket'); // форма "удалить ли?"
-    // AppRouter::post('/ticket:delete/{\d+}/', 'Site@callback_delete_ticket', 'callback.delete.ticket'); // коллбэк удаления
+    AppRouter::get('/ticket:delete/{guid}[/]', 'Site@view_delete_ticket', 'view.delete.ticket'); // форма "удалить ли?"
+    AppRouter::get('/ticket:force_delete/{guid}[/]', 'Site@callback_delete_ticket', 'callback.delete.ticket'); // коллбэк удаления
 
     /**
      * Админка / аутентификация
@@ -152,13 +152,14 @@ try {
      * Админка / работа с элементами
      */
     AppRouter::get('/admin/index', 'Admin@view_index'); // главная (и единственная) страница админки - расширенный поиск по объектам
+    /*
     AppRouter::get('/admin/item.add', 'Admin@form_item_add'); // форма добавления организации в админке
     AppRouter::post('/admin/item.insert', 'Admin@callback_item_insert'); // коллбэк добавления организации в админке
     AppRouter::get('/admin/item.edit/{id:\d+}', 'Admin@form_item_edit'); // форма редактирования
     AppRouter::post('/admin/item.update', 'Admin@callback_item_update'); // коллбэк обновления
     AppRouter::get('/admin/item.delete/{id:\d+}', 'Admin@callback_item_delete'); // удаление организации по ID (фото итд)
     AppRouter::get('/admin/item.toggle/{id:\d+}', 'Admin@ajax_item_toggle'); // toggle visibility
-
+    */
 
     AppRouter::dispatch();
 
@@ -173,6 +174,9 @@ try {
         switch ($exception_code) {
             case 404: {
                 AppLogger::scope('main')->warning('[404] Error', [ $exception_message, $exception_code ]);
+
+                http_response_code(404);
+                Server::redirect('/templates/404.html', 404, true);
                 break;
             }
             case 500: {

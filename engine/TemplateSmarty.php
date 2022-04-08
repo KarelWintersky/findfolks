@@ -40,12 +40,27 @@ namespace FindFolks;
 use Arris\Core\Dot;
 use Exception;
 use Monolog\Logger;
+use Psr\Log\NullLogger;
 use Smarty;
 use function Arris\setOption;
 
-class TemplateSmarty
-{
+interface TemplateSmartyInterface {
     const VERSION = "3.1";
+
+    /**
+     * @param $smarty_instance
+     * @param array $options
+     * @param null $logger
+     * @return mixed
+     */
+    public static function init(Smarty $smarty_instance, array $options = [], $logger = null);
+
+}
+
+class TemplateException extends \RuntimeException { }
+
+class TemplateSmarty implements TemplateSmartyInterface
+{
     /**
      * @var Logger
      */
@@ -72,6 +87,11 @@ class TemplateSmarty
     private static $template_global_file = null;
 
     /**
+     * @var mixed|null
+     */
+    private static $template_inner_file;
+
+    /**
      * Разделитель для элементов заголовка (UNUSED)
      * @var string
      */
@@ -90,18 +110,17 @@ class TemplateSmarty
     public static $redirect = null;
 
     /**
+     * @var array key=>[ value, cached ]
+     */
+    public static $assigns = [];
+
+    /**
      * @var int
      */
     private static $redirect_code;
 
-    /**
-     *
-     * @param $smarty_instance
-     * @param array $options
-     * @param null $logger
-     * @throws Exception
-     */
-    public static function init($smarty_instance, $options = [], $logger = null)
+
+    public static function init(Smarty $smarty_instance, array $options = [], $logger = null)
     {
         if (is_null($smarty_instance) || !($smarty_instance instanceof Smarty))
             throw new Exception("Can't initialize template with null renderer");
@@ -113,9 +132,9 @@ class TemplateSmarty
         self::$title_delimeter = " " . setOption($options, 'title_delimeter', '&#8250;') . " ";
 
         self::$logger
-            = $logger instanceof Logger
+            = !is_null($logger)
             ? $logger
-            : (new Logger('null'))->pushHandler(new \Monolog\Handler\NullHandler());
+            : new NullLogger();
     }
 
     /**
@@ -126,13 +145,26 @@ class TemplateSmarty
      */
     public static function setGlobalTemplate($template_file = null)
     {
-        if (is_null(self::$smarty))
-            throw new Exception("Template is not initialized");
+        if (is_null(self::$smarty)) {
+            throw new TemplateException("Template is not initialized");
+        }
 
-        if (is_null( $template_file ))
-            throw new Exception("Can't set empty global file template");
+        if (is_null( $template_file )) {
+            throw new TemplateException("Can't set empty global file template");
+        }
 
         self::$template_global_file = $template_file;
+    }
+
+    public static function setInnerTemplate($template_file = null)
+    {
+        if (is_null(self::$smarty)) {
+            throw new TemplateException("Template is not initialized");
+        }
+
+        self::$template_inner_file = $template_file;
+        self::$assigns["inner_template"] = $template_file;
+        self::$smarty->assign("inner_template", $template_file);
     }
 
 
@@ -141,9 +173,10 @@ class TemplateSmarty
      * @param null $value
      * @param bool $nocache
      */
-    public static function assign($keys, $value = null, $nocache = false)
+    public static function assign($key, $value = null, $nocache = false)
     {
-        self::$smarty->assign($keys, $value, $nocache); //@todo: lazy assign
+        self::$assigns[ $key ] = [ 'value' => $value, 'nocache' => $nocache ];
+        self::$smarty->assign($key, $value, $nocache); //@todo: lazy assign
     }
 
     /**
@@ -182,11 +215,16 @@ class TemplateSmarty
             header("Content-Type: " . self::$mime_type);
         }
 
+        // если заполнен массив JSON - возвращаем header JSON и json_encode этого массива
+        // если нет, но стоит тип возвращаемого значения JSON - возвращаем json_encode массива ASSIGNS
+
         return $return;
     }
 
 
     /**
+     * @TODO: DEPRECATED
+     *
      * Присваивает JSON-датасет по сложным правилам
      * @todo: ПЕРЕПИСАТЬ
      *
@@ -206,6 +244,8 @@ class TemplateSmarty
     }
 
     /**
+     * * @TODO: DEPRECATED
+     *
      * Устанавливает в self::JSON переменную с указанным значением
      * Используется для простой (или последовательной) установки значений в JSON Dataset
      *
@@ -219,6 +259,8 @@ class TemplateSmarty
     }
 
     /**
+     * * @TODO: DEPRECATED
+     *
      * Возвращает JSON-датасет
      *
      * @return false|string
@@ -229,6 +271,8 @@ class TemplateSmarty
     }
 
     /**
+     * * @TODO: DEPRECATED
+     *
      * Устанавливает MIME-тип, который выводится в хедере Content-Type
      *
      * text/html по умолчанию, его переопределять не надо
@@ -240,6 +284,13 @@ class TemplateSmarty
         self::$mime_type = $mime_type;
     }
 
+    /**
+     * Устанавливает параметры редиректа. Шаблонизатор ничего не вернет, но установит нужные заголовки для редиректа
+     * Таким образом, отработают post-template-render процедуры (сбор статистики итд)
+     *
+     * @param $target
+     * @param int $redirect_code
+     */
     public static function setRedirect($target, $redirect_code = 302)
     {
         self::$redirect = $target;
