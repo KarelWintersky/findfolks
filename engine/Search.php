@@ -82,7 +82,7 @@ class Search
 
     public function search(array $search_fields, $limit = 50, $page = 1)
     {
-        $this->logger = AppLogger::scope('search.requests');
+        $this->logger = AppLogger::scope('search');
 
         $source_rt_index = $this->config['search.indexes.folks'];
         $request_offset = ($limit * ($page - 1));

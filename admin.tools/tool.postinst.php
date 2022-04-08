@@ -19,7 +19,6 @@ $options = [
     'starttime'     =>  microtime(true),
     
     'make:robots'   =>  array_key_exists('make:robots', $cli_options),
-    'make:ads'    =>  array_key_exists('export:ads', $cli_options),
 
     'clear:smarty'   =>  array_key_exists('clear:smarty', $cli_options),
 ];
@@ -33,7 +32,6 @@ try {
         CLIConsole::say(<<<HOWTOUSE
 Possible settings:
   <font color='yellow'>--make:robots</font>      - create robots.txt
-  <font color='yellow'>--export:ads</font>       - export ads.txt
   <font color='yellow'>--clear:smarty</font>     - clear Smarty Cache
   <font color='yellow'>--help</font>             - this help
 HOWTOUSE
@@ -91,7 +89,7 @@ HOWTOUSE
         CLIConsole::say(" <font color='green'>{$target} file generated</font>");
     }
 
-    if ($options['export:ads']) {
+    /*if ($options['make:ads']) {
         $target = $_path_install->join('www')->joinName('ads.txt')->toString();
         
         if (is_file($target) || is_link($target)) {
@@ -106,7 +104,7 @@ HOWTOUSE
         $export_state = file_put_contents($target, (string)$content);
         
         CLIConsole::say( $export_state ? "<font color='green'>OK</font>" : "<font color='red'>ERROR</font>");
-    }
+    }*/
 
 
 } catch (Exception $e) {

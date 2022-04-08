@@ -150,6 +150,7 @@ class Site
         $dataset = $this->search->search($search_fields);
 
         Template::assign("dataset", $dataset);
+        Template::assign("dataset_count", count($dataset));
         Template::setGlobalTemplate("site/search_ajaxed.tpl");
     }
 
