@@ -38,7 +38,6 @@ install: 	##@system Install package. Don't run it manually!!!
 	cp -r engine $(PATH_PROJECT)
 	cp -r admin.tools $(PATH_PROJECT)
 	cp -r composer.json $(PATH_PROJECT)
-	cp -r composer.lock $(PATH_PROJECT)
 	cp $(PATH_WWW)/favicon/favicon.ico $(PATH_WWW)/
 	git rev-parse --short HEAD > $(PATH_PROJECT)/_version
 	git log --oneline --format=%B -n 1 HEAD | head -n 1 >> $(PATH_PROJECT)/_version
