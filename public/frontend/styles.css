@@ -72,7 +72,6 @@ input {
     min-width: 50%;
 }
 
-/*
 fieldset, legend {
     background-color: rgba(240, 255, 255, 0.5);
 }
@@ -82,4 +81,4 @@ fieldset:nth-child(2n), legend {
 
 .search-results-first-row {
     width: 5rem;
-}*/
+}
