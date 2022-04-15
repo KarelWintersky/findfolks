@@ -14,6 +14,7 @@ $(document).ready(function (){
                 district:   $("input[name='district']").val(),
                 street:     $("input[name='street']").val(),
                 fio:        $("input[name='fio']").val(),
+                day:        $("select[name='day']").val()
             }
         }).done(function(data){
             $target.html(data).show();

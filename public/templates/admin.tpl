@@ -28,6 +28,9 @@
     </main>
     <footer>
         <div class="copy">&copy; 2022, ООО Психотроника</div>
+        {if $is_logged}
+            Залогинены
+        {/if}
     </footer>
 </body>
 </html>

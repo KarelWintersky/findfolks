@@ -57,7 +57,6 @@ function logSiteUsage(\Monolog\Logger $logger)
     $logger->info('Metrics:', [
         'memory.usage'      =>  memory_get_usage(true),
         'memory.peak'       =>  memory_get_peak_usage(true),
-        'mysql.query_count' =>  DB::$_db_requests_count,
         'time.total'        =>  number_format($execute_time, 6, '.', ''),
         'site.url'          =>  "{$_SERVER['REQUEST_METHOD']}: {$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}"
     ]);

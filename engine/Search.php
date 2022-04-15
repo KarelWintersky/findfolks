@@ -8,6 +8,8 @@ use Arris\Helpers\Server;
 use Arris\Toolkit\SphinxToolkit;
 use DateTime;
 use Exception;
+use FindFolks\Controllers\Auth;
+use Foolz\SphinxQL\Expression;
 use Foolz\SphinxQL\SphinxQL;
 use Psr\Log\LoggerInterface;
 use FindFolks\TemplateSmarty as Template;
@@ -21,6 +23,8 @@ class Search
 
     private $config;
 
+    private $is_logged = false;
+
     public function __construct(LoggerInterface $logger = null)
     {
         $this->logger = $logger;
@@ -31,6 +35,8 @@ class Search
             'district'     => 10,
             'street'      => 5,
         ];
+
+        $this->is_logged = Auth::isLogged();
     }
 
     /**
@@ -50,6 +56,8 @@ class Search
 
         if ($CONFIG['search.is_enabled'] && $CONFIG['search.index_type'] == 'rt' && !empty($sphinx_target_index)) {
 
+            $dt = (new DateTime());
+
             $status = SphinxToolkit::rt_ReplaceIndex($sphinx_target_index, [
                 'id'            =>  $id,
                 'city'          =>  $dataset['city'],
@@ -59,7 +67,7 @@ class Search
                 'fio'           =>  $dataset['fio'],
                 'ticket'        =>  $dataset['ticket'],
                 'guid'          =>  $dataset['guid'],
-                'date_added'    =>  (new DateTime())->format('U'),
+                'date_added'    =>  $dt->format('U')
             ]);
 
             $logger->info('RT-index updated: ', [ $sphinx_target_index, $id, $dataset['guid'], $status->getAffectedRows() ]);
@@ -80,7 +88,16 @@ class Search
         }
     }
 
-    public function search(array $search_fields, $limit = 50, $page = 1)
+    /**
+     * Если все поля search_fields пусты - не генерирует блок MATCH в запросе
+     * Поле day интерпретируется только если мы залогинены
+     *
+     * @param array $search_fields <city, district, street, fio, [day] >, day в формате ГГГГММДД
+     * @param int $limit
+     * @param int $page
+     * @return array
+     */
+    public function search(array &$search_fields, int $limit = 50, int $page = 1)
     {
         $this->logger = AppLogger::scope('search');
 
@@ -102,7 +119,11 @@ class Search
                 "address",
                 "ticket",
                 "meta",
-                "guid"
+                "guid",
+                // мантикора не умеет в функции в WHERE-секции, только чистые сравнения, то есть мы добавляем колонку `cdate_ymd` и с ней сравниваем ниже (если нужно)
+                // используя этот приём, мы отказываемся от добавления лишнего поля в поисковый индекс (и кода его обработки в нескольких местах)
+
+                "yearmonthday(date_added) AS cdate_ymd"
             ]));
 
             $query_dataset = SphinxToolkit::createInstance()
@@ -112,43 +133,50 @@ class Search
                 ->limit($limit)
             ;
 
-            $match_fields = ['city', 'district', 'street', 'fio'];
+            if ($this->is_logged && !empty($search_fields['day']) && $search_fields['day'] != '*') {
+                $query_dataset = $query_dataset->where('cdate_ymd', '=', (int)$search_fields['day']);
+            }
+            unset($search_fields['day']);
 
-            // сложный билдер OR Match fields
-            // см https://github.com/FoolCode/SphinxQL-Query-Builder/blob/6c1b1b44c941989e39034a7b6a3f987e938cca7a/tests/SphinxQL/MatchBuilderTest.php#L282
-            // создаем экземпляр Match()
-            // генерируем сложную структуру match fields
-            // все это нужно для множественных HIGHLIGHT
-            // см https://github.com/manticoresoftware/manticoresearch/issues/695 (см код)
-            $match = (new Match($query_dataset));
-            $or = false;
-            if (!empty($search_fields['city'])) {
-                $match = $match->field('city')->phrase(self::escapeSearchQuery($search_fields['city']));
-                $or = true;
-            }
-            if (!empty($search_fields['district'])) {
-                if ($or) {
-                    $match = $match->orMatch();
-                }
-                $match = $match->field('district')->phrase(self::escapeSearchQuery($search_fields['district']));
-                $or = true;
-            }
-            if (!empty($search_fields['street'])) {
-                if ($or) {
-                    $match = $match->orMatch();
-                }
-                $match = $match->field('street')->phrase(self::escapeSearchQuery($search_fields['street']));
-                $or = true;
-            }
-            if (!empty($search_fields['fio'])) {
-                if ($or) {
-                    $match = $match->orMatch();
-                }
-                $match = $match->field('fio')->phrase(self::escapeSearchQuery($search_fields['fio']));
-            }
+            // вызываем MATCH только если хотя бы одно из search_fields не пустое
+            if (implode('', $search_fields) !== '') {
 
-            // передаем сложный $match-экземпляр
-            $query_dataset = $query_dataset->match($match);
+                $match_fields = ['city', 'district', 'street', 'fio'];
+                // сложный билдер OR Match fields
+                // см https://github.com/FoolCode/SphinxQL-Query-Builder/blob/6c1b1b44c941989e39034a7b6a3f987e938cca7a/tests/SphinxQL/MatchBuilderTest.php#L282
+                // создаем экземпляр Match()
+                // генерируем сложную структуру match fields
+                // все это нужно для множественных HIGHLIGHT
+                // см https://github.com/manticoresoftware/manticoresearch/issues/695 (см код)
+                $match = (new Match($query_dataset));
+                $or = false;
+                if (!empty($search_fields['city'])) {
+                    $match = $match->field('city')->phrase(self::escapeSearchQuery($search_fields['city']));
+                    $or = true;
+                }
+                if (!empty($search_fields['district'])) {
+                    if ($or) {
+                        $match = $match->orMatch();
+                    }
+                    $match = $match->field('district')->phrase(self::escapeSearchQuery($search_fields['district']));
+                    $or = true;
+                }
+                if (!empty($search_fields['street'])) {
+                    if ($or) {
+                        $match = $match->orMatch();
+                    }
+                    $match = $match->field('street')->phrase(self::escapeSearchQuery($search_fields['street']));
+                    $or = true;
+                }
+                if (!empty($search_fields['fio'])) {
+                    if ($or) {
+                        $match = $match->orMatch();
+                    }
+                    $match = $match->field('fio')->phrase(self::escapeSearchQuery($search_fields['fio']));
+                }
+
+                $query_dataset = $query_dataset->match($match);
+            }
 
             $result_data = $query_dataset->execute();
 

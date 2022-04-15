@@ -41,6 +41,7 @@ try {
         'password'      =>  getenv('AUTH.PASSWORD'),
         'key_cookie'    =>  getenv('AUTH.KEY.COOKIE'),
         'key_session'   =>  getenv('AUTH.KEY.SESSION'),
+        'timeout'       =>  getenv('AUTH.TIMEOUT')
     ];
 
     $CONFIG['flags'] = [
@@ -173,7 +174,7 @@ try {
     if (AppLogger::scope('main') instanceof Psr\Log\LoggerInterface) {
         switch ($exception_code) {
             case 404: {
-                AppLogger::scope('main')->warning('[404] Error', [ $exception_message, $exception_code ]);
+                AppLogger::scope('main')->warning('[404] Error', [ $exception_message, $exception_code, Server::getIP() ]);
 
                 http_response_code(404);
                 Server::redirect('/templates/404.html', 404, true);
@@ -189,7 +190,7 @@ try {
                 break;
             }
             default: {
-                AppLogger::scope('main')->alert("[{$e->getCode()}] Undefined error", [ $exception_message, $exception_code ]);
+                AppLogger::scope('main')->alert("[{$e->getCode()}] Undefined error", [ $exception_message, $exception_code,  ]);
             }
         }
     }

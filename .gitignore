@@ -4,3 +4,4 @@ _version
 vendor
 logs
 config
+composer.lock

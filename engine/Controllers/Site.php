@@ -4,15 +4,15 @@ namespace FindFolks\Controllers;
 
 use Arris\AppLogger;
 use Arris\Helpers\Misc;
+use FindFolks\Core;
 use PDO;
 use Arris\App;
 use Arris\AppConfig;
 use Arris\Helpers\DB;
-use Arris\Helpers\Server;
-use Nette\Utils\Validators;
 
 use FindFolks\Search;
 use FindFolks\TemplateSmarty as Template;
+use Psr\Log\LoggerInterface;
 
 class Site
 {
@@ -31,6 +31,13 @@ class Site
      */
     private $search;
 
+    private $is_logged = false;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct()
     {
         $this->app = App::factory();
@@ -39,6 +46,10 @@ class Site
 
         Template::assign("app_version", $this->app->get('app.version'));
         Template::setGlobalTemplate("index.tpl");
+
+        $this->is_logged = Auth::isLogged();
+
+        Template::assign("is_logged", $this->is_logged);
     }
 
     /**
@@ -46,7 +57,7 @@ class Site
      */
     public function view_main()
     {
-        if ($_SESSION['callback_add_message']) {
+        if (isset($_SESSION['callback_add_message'])) {
             Template::assign("callback_message", $_SESSION['callback_add_message']);
             unset($_SESSION['callback_add_message']);
         }
@@ -97,7 +108,7 @@ class Site
      */
     public function callback_add()
     {
-        $dataset = $this->prepareDataset($_REQUEST);
+        $dataset = Core::prepareDataset($_REQUEST);
 
         $query = DB::makeInsertQuery('tickets', $dataset);
         $sth = $this->pdo->prepare($query);
@@ -130,10 +141,21 @@ class Site
      */
     public function view_search()
     {
+        if ($this->is_logged) {
+            $sth = $this->pdo->query("SELECT DISTINCT( DATE(dt_create) ) AS days FROM tickets ORDER BY days DESC");
+            while ($day = $sth->fetchColumn()) {
+                $days[ str_replace('-', '', $day) ] = date_format(date_create_from_format('Y-m-d', $day), 'd-m-Y');
+            }
+            Template::assign("days_available", $days);
+        }
+
         Template::assign("is_production", AppConfig::get()['flags.is_production']);
         Template::assign("inner_template", "site/search.tpl");
     }
 
+    /**
+     * @throws \Exception
+     */
     public function callback_ajax_search()
     {
         $this->logger = AppLogger::scope('search.desktop');
@@ -144,8 +166,9 @@ class Site
             'street'    =>  $_REQUEST['street'] ?? '',
             'fio'       =>  $_REQUEST['fio'] ?? ''
         ];
-
-        // $search_query = Search::escapeSearchQuery($_REQUEST['query']);
+        if ($this->is_logged) {
+            $search_fields['day'] = $_REQUEST['day'];
+        }
 
         $dataset = $this->search->search($search_fields);
 
@@ -154,6 +177,10 @@ class Site
         Template::setGlobalTemplate("site/search_ajaxed.tpl");
     }
 
+    /**
+     * @param $guid
+     * @throws \Exception
+     */
     public function view_delete_ticket($guid)
     {
         Template::assign("guid", $guid);
@@ -168,6 +195,9 @@ class Site
         Template::setGlobalTemplate("site/delete_ticket.tpl");
     }
 
+    /**
+     * @param $guid
+     */
     public function callback_delete_ticket($guid)
     {
         $sth = $this->pdo->prepare("DELETE FROM tickets WHERE UPPER(guid) = :guid");
@@ -180,8 +210,6 @@ class Site
         $_SESSION['callback_add_message'] = "Ваше объявление было удалено";
         Template::setRedirect("/");
     }
-
-
 
     /**
      * @endpoint: ERROR
@@ -197,39 +225,6 @@ class Site
         }
 
         say($this->response);
-    }
-
-    private function prepareDataset($REQUEST)
-    {
-        array_walk($REQUEST, static function (&$v, $k) {
-            $v = cleanString($v);
-        });
-
-        // валидация данных насчет мата и прочего. Если хоть в одном из полей присутствует - возвращаем []
-        // $REQUEST = $this->validateDataset($REQUEST);
-
-        //@todo: Nette Validation
-
-        // если все поля пусты - возвращаем []
-        return [
-            'city'      =>  $REQUEST['city'] ?? '',
-            'district'  =>  $REQUEST['district'] ?? '',
-            'street'    =>  $REQUEST['street'] ?? '',
-            'address'   =>  $REQUEST['address'] ?? '',
-            'fio'       =>  $REQUEST['fio'] ?? '',
-            'ticket'    =>  $REQUEST['ticket'] ?? '',
-            'ipv4'      =>  Server::getIP(),
-            'guid'      =>  Misc::GUID()
-        ];
-    }
-
-    /**
-     * @param $REQUEST
-     * @return mixed
-     */
-    private function validateDataset($REQUEST)
-    {
-        return $REQUEST;
     }
 
 }

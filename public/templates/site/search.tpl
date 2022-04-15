@@ -28,6 +28,19 @@
             <input type="text" name="fio" value="" placeholder="Фамилия, имя или отчество" tabindex="5">
         </td>
     </tr>
+    {if $is_logged}
+        <tr>
+            <td class="hint">Дата:</td>
+            <td>
+                <select name="day">
+                    <option value="*">Все даты</option>
+                {foreach $days_available as $dk => $dv}
+                    <option value="{$dk}">{$dv}</option>
+                {/foreach}
+                </select>
+            </td>
+        </tr>
+    {/if}
     <tr>
         <td colspan="2" class="center">
             <br/>

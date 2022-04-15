@@ -9,6 +9,9 @@ class Admin
     public function __construct()
     {
         Template::setGlobalTemplate('admin.tpl');
+        Template::assign("is_logged", Auth::isLogged());
+
+        // SELECT DISTINCT(DATE(dt_create)) AS dates  FROM tickets
     }
 
     public function view_index()

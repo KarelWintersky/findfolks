@@ -29,7 +29,8 @@
         "spatie/regex": "^1.4",
         "karelwintersky/arris.toolkit.sphinx": "^1.9",
         "smarty/smarty": "^4.1",
-        "nette/utils": "^3.2"
+        "nette/utils": "^3.2",
+        "apfelbox/php-file-download": "^2.1"
     }
     ,
     "require-dev": {
