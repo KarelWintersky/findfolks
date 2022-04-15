@@ -30,7 +30,8 @@
         "karelwintersky/arris.toolkit.sphinx": "^1.9",
         "smarty/smarty": "^4.1",
         "nette/utils": "^3.2",
-        "apfelbox/php-file-download": "^2.1"
+        "apfelbox/php-file-download": "^2.1",
+        "ajur-media/php_xlsxwriter": "^0.40.0"
     }
     ,
     "require-dev": {

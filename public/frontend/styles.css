@@ -58,6 +58,10 @@ input {
     font-size: small;
     text-align: right;
 }
+.copy a {
+    color: gainsboro;
+    text-decoration: none;
+}
 
 .center {
     text-align: center;
@@ -67,3 +71,15 @@ input {
     height: 30px;
     min-width: 50%;
 }
+
+/*
+fieldset, legend {
+    background-color: rgba(240, 255, 255, 0.5);
+}
+fieldset:nth-child(2n), legend {
+    background-color: aliceblue;
+}
+
+.search-results-first-row {
+    width: 5rem;
+}*/

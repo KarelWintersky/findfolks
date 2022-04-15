@@ -141,6 +141,8 @@ try {
     AppRouter::get('/ticket:delete/{guid}[/]', 'Site@view_delete_ticket', 'view.delete.ticket'); // форма "удалить ли?"
     AppRouter::get('/ticket:force_delete/{guid}[/]', 'Site@callback_delete_ticket', 'callback.delete.ticket'); // коллбэк удаления
 
+    AppRouter::get('/download', 'Site@download', 'callback.download'); // публичный даунлоад объявлений
+
     /**
      * Админка / аутентификация
      */
