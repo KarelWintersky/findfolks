@@ -22,6 +22,7 @@
         "ext-pdo": "*",
         "ext-xml": "*",
         "ext-iconv": "*",
+        "ext-zip": "*",
         "vlucas/phpdotenv": "^3.3",
         "karelwintersky/arris": "^1.74",
         "karelwintersky/arris.helpers": "^0.4.0",
