@@ -1,3 +1,9 @@
+findfolks (0.2.6) stable; urgency=medium
+
+  * [*] list count fix
+
+ -- Karel Wintersky <karel.wintersky@yandex.ru>  Thu, 21 Apr 2022 15:39:06 +0300
+
 findfolks (0.2.5) stable; urgency=medium
 
   * [+] добавлена возможность логина. После логина появляется возможность поиска объявлений по дате

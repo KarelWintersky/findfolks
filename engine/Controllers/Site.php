@@ -68,11 +68,14 @@ class Site
         $sth = $this->pdo->query("SELECT *, DATE_FORMAT(dt_create, '%H:%i / %d.%m.%Y') AS cdate FROM tickets ORDER BY dt_create DESC LIMIT 10");
         $list = $sth->fetchAll();
 
+        $list_count = $this->pdo->query("SELECT COUNT(*) FROM tickets")->fetchColumn();
+
         Template::assign("dataset", $list);
-        Template::assign("dataset_count", count($list));
+        Template::assign("dataset_count", $list_count);
+        Template::assign("is_all_tickets_displayed", (bool)(count($list) == $list_count) );
 
         // показать top-10 добавленных записей
-        Template::assign("inner_template", "site/main.tpl");
+        Template::assign("inner_template", "site/list.tpl");
     }
 
     /**
@@ -94,7 +97,7 @@ class Site
         Template::assign("dataset", $list);
         Template::assign("dataset_count", count($list));
 
-        Template::assign("inner_template", "site/main.tpl");
+        Template::assign("inner_template", "site/list.tpl");
     }
 
     /**
