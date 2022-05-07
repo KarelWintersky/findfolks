@@ -91,7 +91,7 @@ class Export
             'street'    =>  $_REQUEST['street'] ?? '',
             'fio'       =>  $_REQUEST['fio'] ?? ''
         ];
-        if ($this->is_logged) {
+        if (isset($_REQUEST['day'])) {
             $search_fields['day'] = $_REQUEST['day'];
         }
 

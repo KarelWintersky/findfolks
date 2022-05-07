@@ -4,6 +4,7 @@
     }
     table.inner-table {
         border: 1px solid black;
+        margin-bottom: 10px;
     }
 </style>
 {if $dataset_count}
@@ -14,7 +15,7 @@
                     <table width="100%" class="inner-table">
                         <tr>
                             <td class="search-results-first-row"></td>
-                            <td>{$row.cdate_date}, {$row.cdate_time}</td>
+                            <td style="text-align: right">{$row.cdate_date}, {$row.cdate_time}</td>
                         </tr>
                         {if $row.city}
                             <tr>
