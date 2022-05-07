@@ -25,9 +25,14 @@ class Search
 
     private $is_logged = false;
 
+    /**
+     * @var string|bool
+     */
+    private $rt_index;
+
     public function __construct(LoggerInterface $logger = null)
     {
-        $this->logger = $logger;
+        $this->logger = AppLogger::scope('search');
         $this->config = AppConfig::get();
 
         $this->search_weights = [
@@ -35,6 +40,12 @@ class Search
             'district'     => 10,
             'street'      => 5,
         ];
+
+        // rt_findfolks;
+        $this->rt_index
+            = $this->config['search.is_enabled'] && $this->config['search.index_type'] == 'rt' && !empty($this->config['search.indexes.folks'])
+            ? $this->config['search.indexes.folks']
+            : false;
 
         $this->is_logged = Auth::isLogged();
     }
@@ -74,18 +85,46 @@ class Search
         }
     }
 
-    public function deleteRTIndex($guid)
+    /**
+     * Удаляет элемент из RT-индекса
+     *
+     * @param $guid
+     * @param string $field
+     * @return int
+     *
+     * @throws \Foolz\SphinxQL\Exception\ConnectionException
+     * @throws \Foolz\SphinxQL\Exception\DatabaseException
+     * @throws \Foolz\SphinxQL\Exception\SphinxQLException
+     */
+    public function deleteRT_byGUID(string $guid)
     {
-        $CONFIG = AppConfig::get();
-        $logger = AppLogger::scope('search');
+        $affected_rows = 0;
 
-        $sphinx_target_index = $CONFIG['search.indexes.folks']; // rt_findfolks
-        if ($CONFIG['search.is_enabled'] && $CONFIG['search.index_type'] == 'rt' && !empty($sphinx_target_index)) {
+        if ($this->rt_index) {
+            $status = SphinxToolkit::rt_DeleteIndex($this->rt_index, 'guid', $guid);
+            $affected_rows = $status->getAffectedRows();
 
-            $status = SphinxToolkit::rt_DeleteIndex($sphinx_target_index, 'guid', $guid);
-
-            $logger->info('RT-index deleted: ', [ $sphinx_target_index, $guid, $status->getAffectedRows() ]);
+            $this->logger->info('RT-index deleted: ', [ $this->rt_index, $guid, $affected_rows ]);
         }
+
+        return $affected_rows;
+    }
+
+    /**
+     * @throws \Foolz\SphinxQL\Exception\SphinxQLException
+     * @throws \Foolz\SphinxQL\Exception\ConnectionException
+     * @throws \Foolz\SphinxQL\Exception\DatabaseException
+     */
+    public function deleteRT_ByID($id)
+    {
+        $affected_rows = 0;
+        if ($this->rt_index) {
+            $status = SphinxToolkit::rt_DeleteIndex($this->rt_index, 'id', (int)$id);
+            $affected_rows = $status->getAffectedRows();
+
+            $this->logger->info('RT-index deleted: ', [ $this->rt_index, (int)$id, $affected_rows ]);
+        }
+        return $affected_rows;
     }
 
     /**
@@ -99,9 +138,6 @@ class Search
      */
     public function search(array &$search_fields, int $limit = 50, int $page = 1)
     {
-        $this->logger = AppLogger::scope('search');
-
-        $source_rt_index = $this->config['search.indexes.folks'];
         $request_offset = ($limit * ($page - 1));
 
         try {
@@ -128,7 +164,7 @@ class Search
 
             $query_dataset = SphinxToolkit::createInstance()
                 ->select($query_expression)
-                ->from($source_rt_index)
+                ->from($this->rt_index)
                 ->offset($request_offset)
                 ->limit($limit)
             ;

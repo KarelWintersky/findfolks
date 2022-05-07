@@ -198,8 +198,12 @@ class TemplateSmarty implements TemplateSmartyInterface
             return '';
         }
 
-        // если сделаем LAZY ASSIGN - вот тут нужно будет сделать реальный assign в цикле
+        if (!is_null(self::$JSON)) {
+            header("Content-Type: application/json");
+            return json_encode(self::$JSON, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);
+        }
 
+        // если сделаем LAZY ASSIGN - вот тут нужно будет сделать реальный assign в цикле
         if (!is_null($template_file)) {
             $return = self::$smarty->fetch( $template_file );
         } else {

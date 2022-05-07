@@ -46,7 +46,7 @@
             <td colspan="2" class="center">
                 <button type="button" class="search-button button--width--25" id="actor-search" tabindex="6">Найти</button>
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <button type="button" class="search-button button--width--25" id="actor-export" tabindex="7">Экспортировать</button>
+                <button type="button" class="search-button button--width--25" id="actor-export" {*onclick="DownloadFile('export.pdf');"*} tabindex="7">Экспортировать</button>
             </td>
         {else}
             <td colspan="2" class="center">
