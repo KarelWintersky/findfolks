@@ -3,7 +3,8 @@
 PROJECT  = findfolks
 PATH_PROJECT = $(DESTDIR)/var/www/$(PROJECT)
 PATH_WWW = $(PATH_PROJECT)/public
-SEARCH_ENGINE_DIR = manticoresearch
+PATH_MANTICONF = /etc/manticonf/
+MANTICONF_PROJECT = findfolks
 
 help:
 	@perl -e '$(HELP_ACTION)' $(MAKEFILE_LIST)
@@ -43,9 +44,9 @@ install: 	##@system Install package. Don't run it manually!!!
 	git log --oneline --format=%B -n 1 HEAD | head -n 1 >> $(PATH_PROJECT)/_version
 	git log --oneline --format="%at" -n 1 HEAD | xargs -I{} date -d @{} +%Y-%m-%d >> $(PATH_PROJECT)/_version
 	cd $(PATH_PROJECT)/ && composer install
-	mkdir -p $(DESTDIR)/etc/$(SEARCH_ENGINE_DIR)/conf.d/$(PROJECT)
-	cp -r config.searchd/* $(DESTDIR)/etc/$(SEARCH_ENGINE_DIR)/conf.d/$(PROJECT)/
-	chown -R manticore:manticore $(DESTDIR)/etc/$(SEARCH_ENGINE_DIR)/conf.d/$(PROJECT)/
+	mkdir -p $(DESTDIR)$(PATH_MANTICONF)conf.d/$(MANTICONF_PROJECT)
+	cp -r config.searchd/* $(DESTDIR)$(PATH_MANTICONF)conf.d/$(MANTICONF_PROJECT)/
+	chmod -R 0644 $(DESTDIR)$(PATH_MANTICONF)conf.d/$(MANTICONF_PROJECT)/
 	cp makefile.production-toolkit $(PATH_PROJECT)/makefile
 	install -d $(PATH_PROJECT)/cache
 	install -d $(PATH_PROJECT)/config
