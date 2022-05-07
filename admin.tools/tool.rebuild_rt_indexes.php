@@ -116,7 +116,7 @@ try {
             'fio'           =>  $dataset['fio'],
             'ticket'        =>  $dataset['ticket'],
             'guid'          =>  $dataset['guid'],
-            'date_added'    =>  (new DateTime())->format('U'),
+            'date_added'    =>  (DateTime::createFromFormat('Y-m-d H:i:s', $dataset['dt_create']))->format('U')
         ];
     }, "");
 
