@@ -13,6 +13,7 @@ use Arris\Helpers\Server;
 use Arris\Path;
 use Arris\Toolkit\SphinxToolkit;
 use Dotenv\Dotenv;
+use FindFolks\Controllers\Auth;
 use FindFolks\TemplateSmarty as Template;
 use Monolog\Logger;
 
@@ -141,7 +142,7 @@ try {
     AppRouter::get('/ticket:delete/{guid}[/]', 'Site@view_delete_ticket', 'view.delete.ticket'); // форма "удалить ли?"
     AppRouter::get('/ticket:force_delete/{guid}[/]', 'Site@callback_delete_ticket', 'callback.delete.ticket'); // коллбэк удаления
 
-    AppRouter::get('/download', 'Site@download', 'callback.download'); // публичный даунлоад объявлений
+    AppRouter::get('/download', 'Export@download', 'callback.download'); // публичный даунлоад объявлений
 
     /**
      * Админка / аутентификация
@@ -151,25 +152,31 @@ try {
     AppRouter::get('/admin/auth:logout', 'Auth@callback_logout');
     AppRouter::post('/admin/auth:logout', 'Auth@callback_logout');
 
-    /**
-     * Админка / работа с элементами
-     */
-    AppRouter::get('/admin/index', 'Admin@view_index'); // главная (и единственная) страница админки - расширенный поиск по объектам
-    /*
-    AppRouter::get('/admin/item.add', 'Admin@form_item_add'); // форма добавления организации в админке
-    AppRouter::post('/admin/item.insert', 'Admin@callback_item_insert'); // коллбэк добавления организации в админке
-    AppRouter::get('/admin/item.edit/{id:\d+}', 'Admin@form_item_edit'); // форма редактирования
-    AppRouter::post('/admin/item.update', 'Admin@callback_item_update'); // коллбэк обновления
-    AppRouter::get('/admin/item.delete/{id:\d+}', 'Admin@callback_item_delete'); // удаление организации по ID (фото итд)
-    AppRouter::get('/admin/item.toggle/{id:\d+}', 'Admin@ajax_item_toggle'); // toggle visibility
-    */
+    if (Auth::isLogged()) {
+        AppRouter::get('/admin/ticket.delete/{id:\d+}[/]', 'Admin@callback_ticket_delete');
+        AppRouter::get('/admin/export[/]', 'Export@callback_advanced_export');
+
+
+        /**
+         * Админка / работа с элементами
+         */
+        // AppRouter::get('/admin/index', 'Admin@view_index'); // главная (и единственная) страница админки - расширенный поиск по объектам
+        /*
+        AppRouter::get('/admin/item.add', 'Admin@form_item_add'); // форма добавления организации в админке
+        AppRouter::post('/admin/item.insert', 'Admin@callback_item_insert'); // коллбэк добавления организации в админке
+        AppRouter::get('/admin/item.edit/{id:\d+}', 'Admin@form_item_edit'); // форма редактирования
+        AppRouter::post('/admin/item.update', 'Admin@callback_item_update'); // коллбэк обновления
+        AppRouter::get('/admin/item.delete/{id:\d+}', 'Admin@callback_item_delete'); // удаление по ID (фото итд)
+        AppRouter::get('/admin/item.toggle/{id:\d+}', 'Admin@ajax_item_toggle'); // toggle visibility
+        */
+    }
+
 
     AppRouter::dispatch();
 
     echo Template::render();
 
 } catch (AppRouterException $e) {
-    // (new \FindFolks\Controllers\Site())->error($e->getMessage());
     $exception_code = $e->getCode();
     $exception_message = $e->getMessage();
 

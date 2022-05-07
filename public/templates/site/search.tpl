@@ -42,13 +42,21 @@
         </tr>
     {/if}
     <tr>
-        <td colspan="2" class="center">
-            <br/>
-            <button type="button" class="search-button" id="actor-search" tabindex="6">Найти</button>
-        </td>
+        {if $is_logged}
+            <td colspan="2" class="center">
+                <button type="button" class="search-button button--width--25" id="actor-search" tabindex="6">Найти</button>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" class="search-button button--width--25" id="actor-export" tabindex="7">Экспортировать</button>
+            </td>
+        {else}
+            <td colspan="2" class="center">
+                <br/>
+                <button type="button" class="search-button button--width--50" id="actor-search" tabindex="6">Найти</button>
+            </td>
+        {/if}
+
     </tr>
 </table>
 <hr>
 <div id="search_results">
-
 </div>

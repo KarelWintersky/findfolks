@@ -70,10 +70,17 @@ input {
 .center {
     text-align: center;
 }
+.button--width--50 {
+    min-width: 50%;
+}
+
+.button--width--25 {
+    min-width: 25%;
+}
+
 .search-button {
     font-size: large;
     height: 30px;
-    min-width: 50%;
 }
 
 fieldset, legend {
@@ -85,4 +92,7 @@ fieldset:nth-child(2n), legend {
 
 .search-results-first-row {
     width: 5rem;
+}
+.search-results-last-row {
+    width: 3rem;
 }

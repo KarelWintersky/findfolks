@@ -44,7 +44,7 @@ class Auth
 
             setcookie( $this->config['auth.key_cookie'], self::MAGIC_AUTH_VALUE , time() + $this->config['auth.timeout'], '/');
 
-            Template::setRedirect('/admin/index');
+            Template::setRedirect('/');
         } else {
             die('<button onclick="window.location.href=\'/admin\'">Bad credentials. Back to login form.</button> ');
         }
