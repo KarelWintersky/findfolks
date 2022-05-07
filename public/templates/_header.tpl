@@ -1,4 +1,10 @@
+{if $is_logged}
+<div class="copy copy-is-logged">
+    [<a href="/admin/auth:logout">Logout</a>]
+</div>
+{else}
     {if $is_production}<img src="/images/photo_2020-05-27_02-36-25.jpg" alt="" width="100%">{/if}
+{/if}
     <h2>Ищем родных</h2>
     <div style="display: flex;align-items: center;justify-content: space-between;">
         <button class="large button--header" onclick="window.location.href='/add'">Добавить объявление</button>

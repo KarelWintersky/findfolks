@@ -41,7 +41,13 @@ class Export
 
     private function prepareXLS($list_name)
     {
-        $sql = "SELECT id, dt_create, DATE_FORMAT(dt_create, '%d.%m.%Y %H:%i') AS cdate, city, district, street, address, fio, ticket FROM tickets ORDER BY id ASC";
+        $filter = '';
+        if (!empty($_REQUEST['day']) && $_REQUEST['day'] != '*') {
+            $filter = " WHERE DATE_FORMAT(dt_create, '%Y%m%d') = {$_REQUEST['day']} ";
+        }
+
+        $sql = "SELECT id, dt_create, DATE_FORMAT(dt_create, '%d.%m.%Y %H:%i') AS cdate, city, district, street, address, fio, ticket FROM tickets {$filter} ORDER BY dt_create ASC";
+
         $sth = $this->pdo->query($sql);
 
         $dataset = $sth->fetchAll();
@@ -119,7 +125,7 @@ class Export
      */
     private function prepareExportData($search_fields)
     {
-        $limit = isset($_REQUEST['limit']) && !empty($_REQUEST['limit']) ? (int)$_REQUEST['limit'] : 2000;
+        $limit = isset($_REQUEST['limit']) && !empty($_REQUEST['limit']) ? (int)$_REQUEST['limit'] : ((int)getenv('DEBUG.MAX_EXPORT_ITEMS_COUNT') ?? 2000);
 
         // $count = $this->unit_search->search_count($search_fields);
 

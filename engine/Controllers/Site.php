@@ -176,7 +176,7 @@ class Site
             $search_fields['day'] = $_REQUEST['day'];
         }
 
-        $dataset = $this->search->search($search_fields);
+        $dataset = $this->search->search($search_fields, 10000);
 
         Template::assign("dataset", $dataset);
         Template::assign("dataset_count", count($dataset));

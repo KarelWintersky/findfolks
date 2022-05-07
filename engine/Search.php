@@ -243,7 +243,7 @@ class Search
                 ->select($query_expression)
                 ->from($this->rt_index)
                 ->offset($request_offset)
-                ->orderBy("date_added", 'ASC')
+                ->orderBy("date_added", 'DESC')
                 ->limit($limit)
             ;
 

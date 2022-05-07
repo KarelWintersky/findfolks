@@ -42,7 +42,8 @@ try {
         'password'      =>  getenv('AUTH.PASSWORD'),
         'key_cookie'    =>  getenv('AUTH.KEY.COOKIE'),
         'key_session'   =>  getenv('AUTH.KEY.SESSION'),
-        'timeout'       =>  getenv('AUTH.TIMEOUT')
+        'timeout'       =>  getenv('AUTH.TIMEOUT'),
+        'magic'         =>  getenv('AUTH.MAGIC')
     ];
 
     $CONFIG['flags'] = [

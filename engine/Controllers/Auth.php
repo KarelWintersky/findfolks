@@ -8,12 +8,13 @@ use FindFolks\TemplateSmarty as Template;
 
 class Auth
 {
-    const MAGIC_AUTH_VALUE = 1000;
+    private $MAGIC_AUTH_VALUE;
     private \Arris\Core\Dot $config;
 
     public function __construct()
     {
         $this->config = AppConfig::get();
+        $this->MAGIC_AUTH_VALUE = (string)$this->config['auth.magic'];
     }
 
     /**
@@ -40,9 +41,9 @@ class Auth
             && $_REQUEST['auth:login'] === $this->config['auth.login']
             && $_REQUEST['auth:password'] === $this->config['auth.password']
         ) {
-            $_SESSION[ $this->config['auth.key_session'] ] = self::MAGIC_AUTH_VALUE;
+            $_SESSION[ $this->config['auth.key_session'] ] = $this->MAGIC_AUTH_VALUE;
 
-            setcookie( $this->config['auth.key_cookie'], self::MAGIC_AUTH_VALUE , time() + $this->config['auth.timeout'], '/');
+            setcookie( $this->config['auth.key_cookie'], $this->MAGIC_AUTH_VALUE , time() + $this->config['auth.timeout'], '/');
 
             Template::setRedirect('/');
         } else {
@@ -60,7 +61,7 @@ class Auth
         unset($_COOKIE[ $this->config['auth.key_cookie'] ]);
         unset($_SESSION[ $this->config['auth.key_session'] ]);
 
-        Template::setRedirect('/admin');
+        Template::setRedirect('/');
     }
 
     /**

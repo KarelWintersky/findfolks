@@ -58,13 +58,15 @@ input {
 }
 
 .copy {
-    color: gainsboro;
-    font-size: small;
+    color: lavender; /* gainsboro */
     text-align: right;
 }
 .copy a {
     color: gainsboro;
     text-decoration: none;
+}
+.font--small {
+    font-size: small;
 }
 .copy-is-logged a {
     color: sienna !important;
