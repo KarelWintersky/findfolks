@@ -154,7 +154,7 @@ try {
 
     if (Auth::isLogged()) {
         AppRouter::get('/admin/ticket.delete/{id:\d+}[/]', 'Admin@callback_ticket_delete');
-        AppRouter::get('/admin/download_pdf[/]', 'Export@callback_advanced_export');
+        AppRouter::post('/admin/download_pdf[/]', 'Export@callback_advanced_export');
         AppRouter::get('/admin/view_pdf[/]', 'Export@callback_advanced_export_view');
 
 

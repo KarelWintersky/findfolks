@@ -127,6 +127,83 @@ class Search
         return $affected_rows;
     }
 
+    public function search_count(array $search_fields)
+    {
+        $count = 0;
+
+        try {
+            if ($this->config['search.enabled'] == 0) {
+                throw new Exception('Поиск временно отключён');
+            }
+
+            $query_count = SphinxToolkit::createInstance()
+                ->select(SphinxQL::expr('COUNT(*) AS cnt, yearmonthday(date_added) AS cdate_ymd'))
+                ->from($this->rt_index)
+            ;
+
+            if (!empty($search_fields['day']) && $search_fields['day'] != '*') {
+                $query_count = $query_count->where('cdate_ymd', '=', (int)$search_fields['day']);
+            }
+            unset($search_fields['day']);
+
+            // вызываем MATCH только если хотя бы одно из search_fields не пустое
+            if (implode('', $search_fields) !== '') {
+
+                $match_fields = ['city', 'district', 'street', 'fio'];
+                // сложный билдер OR Match fields
+                // см https://github.com/FoolCode/SphinxQL-Query-Builder/blob/6c1b1b44c941989e39034a7b6a3f987e938cca7a/tests/SphinxQL/MatchBuilderTest.php#L282
+                // создаем экземпляр Match()
+                // генерируем сложную структуру match fields
+                // все это нужно для множественных HIGHLIGHT
+                // см https://github.com/manticoresoftware/manticoresearch/issues/695 (см код)
+                $match = (new Match($query_count));
+                $or = false;
+                if (!empty($search_fields['city'])) {
+                    $match = $match->field('city')->phrase(self::escapeSearchQuery($search_fields['city']));
+                    $or = true;
+                }
+                if (!empty($search_fields['district'])) {
+                    if ($or) {
+                        $match = $match->orMatch();
+                    }
+                    $match = $match->field('district')->phrase(self::escapeSearchQuery($search_fields['district']));
+                    $or = true;
+                }
+                if (!empty($search_fields['street'])) {
+                    if ($or) {
+                        $match = $match->orMatch();
+                    }
+                    $match = $match->field('street')->phrase(self::escapeSearchQuery($search_fields['street']));
+                    $or = true;
+                }
+                if (!empty($search_fields['fio'])) {
+                    if ($or) {
+                        $match = $match->orMatch();
+                    }
+                    $match = $match->field('fio')->phrase(self::escapeSearchQuery($search_fields['fio']));
+                }
+
+                $query_count = $query_count->match($match);
+            }
+            $result_data = $query_count->execute();
+
+            $count = $result_data->fetchAllAssoc()[0]['cnt'] ?? 0;
+
+        } catch (Exception $e) {
+            $error_message = $e->getMessage();
+            $this->logger->debug('Error:', [ $error_message ]);
+            $this->error_message = $error_message;
+
+            if ((strpos($error_message, '[') !== false) && (preg_match('/(\[\d+\])/', $error_message, $range) === 1)) {
+                $error_code = $range[1];
+                Template::assign("error_message", "Ничего не найдено, что-то пошло не так. Код ошибки: {$error_code}");
+            } else {
+                Template::assign("error_message", $error_message);
+            }
+        }
+        return (int)$count;
+    }
+
     /**
      * Если все поля search_fields пусты - не генерирует блок MATCH в запросе
      * Поле day интерпретируется только если мы залогинены
@@ -166,6 +243,7 @@ class Search
                 ->select($query_expression)
                 ->from($this->rt_index)
                 ->offset($request_offset)
+                ->orderBy("date_added", 'ASC')
                 ->limit($limit)
             ;
 

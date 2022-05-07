@@ -8,10 +8,21 @@ use Arris\AppLogger;
 use DateTime;
 use FindFolks\Search;
 use FindFolks\TemplateSmarty as Template;
+use PDO;
 use XLSXWriter;
 
 class Export
 {
+    private Search $unit_search;
+    private \Monolog\Logger $logger;
+    private bool $is_logged;
+    private App $app;
+
+    /**
+     * @var PDO
+     */
+    private $pdo;
+
     public function __construct()
     {
         $this->app = App::factory();
@@ -19,6 +30,8 @@ class Export
         $this->is_logged = Auth::isLogged();
 
         $this->logger = AppLogger::scope('search.desktop');
+
+        $this->unit_search = (new Search());
 
         Template::assign("app_version", $this->app->get('app.version'));
         Template::assign("is_logged", $this->is_logged);
@@ -85,21 +98,22 @@ class Export
      */
     private function prepareExportData()
     {
-        $search_fields = [
-            'city'      =>  $_REQUEST['city'] ?? '',
-            'district'  =>  $_REQUEST['district'] ?? '',
-            'street'    =>  $_REQUEST['street'] ?? '',
-            'fio'       =>  $_REQUEST['fio'] ?? ''
-        ];
-        if (isset($_REQUEST['day'])) {
-            $search_fields['day'] = $_REQUEST['day'];
+        $req_fields = [ 'city', 'district', 'street', 'fio', 'day' ];
+        $search_fields = [];
+        foreach ($req_fields as $field) {
+            if (isset($_REQUEST[$field]) && !empty($_REQUEST[$field])) {
+                $search_fields[ $field ] = $_REQUEST[$field];
+            }
         }
+        $limit = isset($_REQUEST['limit']) && !empty($_REQUEST['limit']) ? (int)$_REQUEST['limit'] : 50;
 
-        $dataset = (new Search())->search($search_fields, 50);
+        // $count = $this->unit_search->search_count($search_fields);
+
+        $dataset = $this->unit_search->search($search_fields, $limit, 1);
 
         Template::assign("dataset", $dataset);
         Template::assign("dataset_count", count($dataset));
-        Template::setGlobalTemplate("export/export1.tpl");
+        Template::setGlobalTemplate("export/export_as_tables.tpl");
 
         $html = Template::render(null, true);
         return $html;
