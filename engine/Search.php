@@ -221,6 +221,8 @@ class Search
             $dataset = [];
             while ($row = $result_data->fetchAssoc()) {
                 $row['cdate'] = date('H:i / d.m.Y', $row['date_added']);
+                $row['cdate_time'] = date('H:i', $row['date_added']);
+                $row['cdate_date'] = date('d.m.Y', $row['date_added']);
                 $dataset[] = $row;
             }
 

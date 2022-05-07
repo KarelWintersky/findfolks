@@ -18,8 +18,12 @@ class Export
         $this->pdo = $this->app->get('pdo');
         $this->is_logged = Auth::isLogged();
 
+        $this->logger = AppLogger::scope('search.desktop');
+
         Template::assign("app_version", $this->app->get('app.version'));
         Template::assign("is_logged", $this->is_logged);
+
+        ini_set('pcre.backtrack_limit', '10000000');
     }
 
     /**
@@ -74,10 +78,13 @@ class Export
         $fileDownload->sendDownload($fileName);
     }
 
-    public function callback_advanced_export()
+    /**
+     * Допустить постранично
+     *
+     * @throws \Exception
+     */
+    private function prepareExportData()
     {
-        $this->logger = AppLogger::scope('search.desktop');
-
         $search_fields = [
             'city'      =>  $_REQUEST['city'] ?? '',
             'district'  =>  $_REQUEST['district'] ?? '',
@@ -88,23 +95,36 @@ class Export
             $search_fields['day'] = $_REQUEST['day'];
         }
 
-        $dataset = (new Search())->search($search_fields);
+        $dataset = (new Search())->search($search_fields, 50);
 
         Template::assign("dataset", $dataset);
         Template::assign("dataset_count", count($dataset));
-        Template::assign("is_all_tickets_displayed", true );
-        Template::setGlobalTemplate("site/search_ajaxed.tpl");
+        Template::setGlobalTemplate("export/export1.tpl");
 
         $html = Template::render(null, true);
+        return $html;
+    }
+
+    public function callback_advanced_export()
+    {
+        $html = self::prepareExportData();
 
         $mpdf = new \Mpdf\Mpdf();
-
         $mpdf->WriteHTML($html);
         $content = $mpdf->Output('', 'S');
 
         $fileName = "export.pdf";
         $fileDownload = FileDownload::createFromString($content);
         $fileDownload->sendDownload($fileName);
+    }
+
+    public function callback_advanced_export_view()
+    {
+        $html = self::prepareExportData();
+
+        $mpdf = new \Mpdf\Mpdf();
+        $mpdf->WriteHTML($html);
+        $mpdf->Output();
     }
 
 

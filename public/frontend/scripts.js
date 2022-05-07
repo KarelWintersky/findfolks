@@ -70,7 +70,7 @@ function _DownloadFile(url, data, fileName) {
     });
 
     $(document).on('click', '#actor-export', function (){
-        let url = '/admin/export';
+        let url = '/admin/download_pdf';
         _DownloadFile(url, {}, 'export.pdf');
     });
 

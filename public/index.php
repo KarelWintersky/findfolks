@@ -142,7 +142,7 @@ try {
     AppRouter::get('/ticket:delete/{guid}[/]', 'Site@view_delete_ticket', 'view.delete.ticket'); // форма "удалить ли?"
     AppRouter::get('/ticket:force_delete/{guid}[/]', 'Site@callback_delete_ticket', 'callback.delete.ticket'); // коллбэк удаления
 
-    AppRouter::get('/download', 'Export@download', 'callback.download'); // публичный даунлоад объявлений
+    AppRouter::get('/download', 'Export@download_xls', 'callback.download'); // публичный даунлоад объявлений
 
     /**
      * Админка / аутентификация
@@ -154,7 +154,9 @@ try {
 
     if (Auth::isLogged()) {
         AppRouter::get('/admin/ticket.delete/{id:\d+}[/]', 'Admin@callback_ticket_delete');
-        AppRouter::get('/admin/export[/]', 'Export@callback_advanced_export');
+        AppRouter::get('/admin/download_pdf[/]', 'Export@callback_advanced_export');
+        AppRouter::get('/admin/view_pdf[/]', 'Export@callback_advanced_export_view');
+
 
 
         /**
