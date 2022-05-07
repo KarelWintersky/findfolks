@@ -39,13 +39,8 @@ class Export
         ini_set('pcre.backtrack_limit', '10000000');
     }
 
-    /**
-     * Обработчик скачивания всего файла
-     */
-    public function download()
+    private function prepareXLS($list_name)
     {
-        $list_name = (new DateTime())->format('d-m-Y');
-
         $sql = "SELECT id, dt_create, DATE_FORMAT(dt_create, '%d.%m.%Y %H:%i') AS cdate, city, district, street, address, fio, ticket FROM tickets ORDER BY id ASC";
         $sth = $this->pdo->query($sql);
 
@@ -83,20 +78,29 @@ class Export
             $writer->writeSheetRow($list_name, ['Нет данных']);
         }
         $content = $writer->writeToString();
+        return $content;
+    }
 
+    /**
+     * Обработчик скачивания всего файла
+     */
+    public function download()
+    {
+        $list_name = (new DateTime())->format('d-m-Y');
 
-        // $fileName = "сводный_список_объявлений_[{$_REQUEST['sdate']}-{$_REQUEST['edate']}].xlsx";
+        $content = $this->prepareXLS($list_name);
+
         $fileName = "сводный_список_объявлений_[{$list_name}].xlsx";
         $fileDownload = FileDownload::createFromString($content);
         $fileDownload->sendDownload($fileName);
     }
 
     /**
-     * Допустить постранично
+     * Формирует поисковые поля
      *
-     * @throws \Exception
+     * @return array
      */
-    private function prepareExportData()
+    private function prepareSearchFields()
     {
         $req_fields = [ 'city', 'district', 'street', 'fio', 'day' ];
         $search_fields = [];
@@ -105,7 +109,17 @@ class Export
                 $search_fields[ $field ] = $_REQUEST[$field];
             }
         }
-        $limit = isset($_REQUEST['limit']) && !empty($_REQUEST['limit']) ? (int)$_REQUEST['limit'] : 50;
+        return $search_fields;
+    }
+
+    /**
+     * Подготавливает данные для экспорта
+     *
+     * @throws \Exception
+     */
+    private function prepareExportData($search_fields)
+    {
+        $limit = isset($_REQUEST['limit']) && !empty($_REQUEST['limit']) ? (int)$_REQUEST['limit'] : 2000;
 
         // $count = $this->unit_search->search_count($search_fields);
 
@@ -113,15 +127,21 @@ class Export
 
         Template::assign("dataset", $dataset);
         Template::assign("dataset_count", count($dataset));
-        Template::setGlobalTemplate("export/export_as_tables.tpl");
+        Template::setGlobalTemplate("export/export_as_tables_collapsed_date.tpl");
 
         $html = Template::render(null, true);
         return $html;
     }
 
-    public function callback_advanced_export()
+    /**
+     * Export (download) PDF
+     *
+     * @throws \Mpdf\MpdfException
+     */
+    public function callback_export_pdf()
     {
-        $html = self::prepareExportData();
+        $search_fields = $this->prepareSearchFields();
+        $html = self::prepareExportData($search_fields);
 
         $mpdf = new \Mpdf\Mpdf();
         $mpdf->WriteHTML($html);
@@ -132,9 +152,29 @@ class Export
         $fileDownload->sendDownload($fileName);
     }
 
+    /**
+     * Export XLSX
+     */
+    public function callback_export_xls()
+    {
+        $list_name = (new DateTime())->format('d-m-Y');
+
+        $content = $this->prepareXLS($list_name);
+
+        $fileName = "сводный_список_объявлений_[{$list_name}].xlsx";
+        $fileDownload = FileDownload::createFromString($content);
+        $fileDownload->sendDownload($fileName);
+    }
+
+    /**
+     * VIEW PDF
+     *
+     * @throws \Mpdf\MpdfException
+     */
     public function callback_advanced_export_view()
     {
-        $html = self::prepareExportData();
+        $search_fields = $this->prepareSearchFields();
+        $html = self::prepareExportData($search_fields);
 
         $mpdf = new \Mpdf\Mpdf();
         $mpdf->WriteHTML($html);

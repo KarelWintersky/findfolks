@@ -152,12 +152,13 @@ try {
     AppRouter::get('/admin/auth:logout', 'Auth@callback_logout');
     AppRouter::post('/admin/auth:logout', 'Auth@callback_logout');
 
+    AppRouter::post('/export/download_pdf[/]', 'Export@callback_export_pdf');
+    AppRouter::post('/export/download_xls[/]', 'Export@callback_export_xls');
+
     if (Auth::isLogged()) {
         AppRouter::get('/admin/ticket.delete/{id:\d+}[/]', 'Admin@callback_ticket_delete');
-        AppRouter::post('/admin/download_pdf[/]', 'Export@callback_advanced_export');
-        AppRouter::get('/admin/view_pdf[/]', 'Export@callback_advanced_export_view');
 
-
+        // AppRouter::get('/admin/view_pdf[/]', 'Export@callback_advanced_export_view');
 
         /**
          * Админка / работа с элементами

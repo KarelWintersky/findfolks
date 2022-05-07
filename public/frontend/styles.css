@@ -66,6 +66,9 @@ input {
     color: gainsboro;
     text-decoration: none;
 }
+.copy-is-logged a {
+    color: sienna !important;
+}
 
 .center {
     text-align: center;
