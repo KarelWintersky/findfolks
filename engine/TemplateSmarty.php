@@ -208,11 +208,11 @@ class TemplateSmarty implements TemplateSmartyInterface
             $return = self::$smarty->fetch( $template_file );
         } else {
             // позволяет не делать ничего если файл глобального шаблона NULL
-            $return = is_null( self::$template_global_file) ? '' : self::$smarty->fetch( self::$template_global_file);
+            $return = is_null(self::$template_global_file) ? '' : self::$smarty->fetch(self::$template_global_file);
         }
 
         if ($clean) {
-            self::$smarty->clear_all_assign();
+            self::$smarty->clearAllAssign();
         }
 
         if (self::$mime_type) {

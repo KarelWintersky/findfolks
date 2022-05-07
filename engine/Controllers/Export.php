@@ -4,7 +4,9 @@ namespace FindFolks\Controllers;
 
 use Apfelbox\FileDownload\FileDownload;
 use Arris\App;
+use Arris\AppLogger;
 use DateTime;
+use FindFolks\Search;
 use FindFolks\TemplateSmarty as Template;
 use XLSXWriter;
 
@@ -74,8 +76,30 @@ class Export
 
     public function callback_advanced_export()
     {
+        $this->logger = AppLogger::scope('search.desktop');
+
+        $search_fields = [
+            'city'      =>  $_REQUEST['city'] ?? '',
+            'district'  =>  $_REQUEST['district'] ?? '',
+            'street'    =>  $_REQUEST['street'] ?? '',
+            'fio'       =>  $_REQUEST['fio'] ?? ''
+        ];
+        if ($this->is_logged) {
+            $search_fields['day'] = $_REQUEST['day'];
+        }
+
+        $dataset = (new Search())->search($search_fields);
+
+        Template::assign("dataset", $dataset);
+        Template::assign("dataset_count", count($dataset));
+        Template::assign("is_all_tickets_displayed", true );
+        Template::setGlobalTemplate("site/search_ajaxed.tpl");
+
+        $html = Template::render(null, true);
+
         $mpdf = new \Mpdf\Mpdf();
-        $mpdf->WriteHTML('Hello World');
+
+        $mpdf->WriteHTML($html);
         $content = $mpdf->Output('', 'S');
 
         $fileName = "export.pdf";
